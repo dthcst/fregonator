@@ -1,0 +1,52 @@
+================================================================================
+                         FREGONATOR - LICENCIA Y DISCLAIMER
+================================================================================
+
+FREGONATOR es software GRATUITO. Puedes usarlo, copiarlo y distribuirlo
+libremente para uso personal o comercial.
+
+================================================================================
+                           EXENCION DE RESPONSABILIDAD
+================================================================================
+
+AL USAR ESTE SOFTWARE, ACEPTAS Y ENTIENDES QUE:
+
+1. FREGONATOR se proporciona "TAL CUAL" (AS IS), sin garantias de ningun tipo,
+   ni expresas ni implicitas.
+
+2. El autor NO SE HACE RESPONSABLE de:
+   - Perdida de datos
+   - Danos en el sistema operativo
+   - Fallos de hardware
+   - Cualquier otro problema derivado del uso de este software
+
+3. FREGONATOR realiza operaciones de limpieza y optimizacion que MODIFICAN
+   la configuracion del sistema operativo Windows. Estas operaciones incluyen:
+   - Eliminar archivos temporales y cache
+   - Modificar el registro de Windows
+   - Detener servicios y procesos
+   - Cambiar configuraciones de energia y rendimiento
+
+4. Es TU RESPONSABILIDAD:
+   - Hacer backup de tus datos importantes ANTES de usar este software
+   - Entender lo que hace cada operacion antes de ejecutarla
+   - Usar el software bajo tu propio riesgo
+
+5. Este software requiere permisos de ADMINISTRADOR para funcionar.
+   Al otorgar estos permisos, aceptas que el software pueda modificar
+   tu sistema.
+
+================================================================================
+                              USO BAJO TU PROPIO RIESGO
+================================================================================
+
+Si no estas de acuerdo con estos terminos, NO USES este software.
+
+Al ejecutar FREGONATOR, confirmas que has leido y aceptado esta licencia.
+
+================================================================================
+
+Desarrollado con Claude Code (Anthropic)
+Costa da Morte - www.costa-da-morte.com
+
+2026 - Software libre y gratuito
