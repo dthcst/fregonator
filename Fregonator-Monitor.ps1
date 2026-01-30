@@ -28,7 +28,7 @@ $LogoPath = Join-Path $ScriptPath "Logo-Fregonator-001.png"
 $FontPath = Join-Path $ScriptPath "_FUENTES\citaro_voor_dubbele_hoogte_breed\citaro_voor_dubbele_hoogte_breed.ttf"
 $AbortFile = "$env:PUBLIC\fregonator_abort.flag"
 $LauncherScript = Join-Path $ScriptPath "Fregonator-Launcher.ps1"
-$SoundPath = Join-Path $ScriptPath "sounds\bark.wav"
+$SoundPath = Join-Path $ScriptPath "_SONIDOS\bark.wav"
 
 # Cargar fuente Citaro
 $script:privateFonts = New-Object System.Drawing.Text.PrivateFontCollection

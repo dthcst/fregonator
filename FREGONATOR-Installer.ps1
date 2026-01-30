@@ -126,7 +126,7 @@ foreach ($archivo in $archivos) {
         $faltantes += $archivo
     }
 }
-if (-not (Test-Path "$InstallerDir\sounds\bark.wav")) { $faltantes += "sounds\bark.wav" }
+if (-not (Test-Path "$InstallerDir\_SONIDOS\bark.wav")) { $faltantes += "_SONIDOS\bark.wav" }
 
 if ($faltantes.Count -gt 0) {
     Write-Host ""
@@ -167,7 +167,7 @@ if (Test-Path $InstallDir) {
     Remove-Item $InstallDir -Recurse -Force
 }
 New-Item -Path $InstallDir -ItemType Directory -Force | Out-Null
-New-Item -Path "$InstallDir\sounds" -ItemType Directory -Force | Out-Null
+New-Item -Path "$InstallDir\_SONIDOS" -ItemType Directory -Force | Out-Null
 New-Item -Path "$InstallDir\_FUENTES\citaro_voor_dubbele_hoogte_breed" -ItemType Directory -Force | Out-Null
 
 # PASO 2: Copiar archivos
@@ -175,7 +175,7 @@ Show-Progress 2 5 "Copiando archivos..."
 foreach ($archivo in $archivos) {
     Copy-Item "$InstallerDir\$archivo" "$InstallDir\$archivo" -Force
 }
-Copy-Item "$InstallerDir\sounds\*" "$InstallDir\sounds\" -Force -ErrorAction SilentlyContinue
+Copy-Item "$InstallerDir\_SONIDOS\*" "$InstallDir\_SONIDOS\" -Force -ErrorAction SilentlyContinue
 if (Test-Path "$InstallerDir\_FUENTES\citaro_voor_dubbele_hoogte_breed") {
     Copy-Item "$InstallerDir\_FUENTES\citaro_voor_dubbele_hoogte_breed\*" "$InstallDir\_FUENTES\citaro_voor_dubbele_hoogte_breed\" -Force -ErrorAction SilentlyContinue
 }

@@ -275,7 +275,7 @@ function Show-NalaSplash {
         Start-Sleep -Milliseconds 30
     }
     # Woof woof! Ladrido de Nala
-    $barkPath = "$PSScriptRoot\_FREGONATOR\sounds\bark.wav"
+    $barkPath = "$PSScriptRoot\_FREGONATOR\_SONIDOS\bark.wav"
     if (Test-Path $barkPath) {
         try {
             $bark = New-Object System.Media.SoundPlayer $barkPath

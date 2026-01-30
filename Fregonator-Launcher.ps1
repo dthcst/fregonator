@@ -17,7 +17,7 @@ $script:MonitorScript = Join-Path $script:ScriptPath "Fregonator-Monitor.ps1"
 $script:LogoPath = Join-Path $script:ScriptPath "Logo-Fregonator-001.png"
 $script:FontPath = Join-Path $script:ScriptPath "_FUENTES\citaro_voor_dubbele_hoogte_breed\citaro_voor_dubbele_hoogte_breed.ttf"
 $script:ProgressFile = "$env:PUBLIC\fregonator_progress.json"
-$script:BarkSound = Join-Path $script:ScriptPath "sounds\bark.wav"
+$script:BarkSound = Join-Path $script:ScriptPath "_SONIDOS\bark.wav"
 
 # ============================================================================
 # SONIDOS - Ladrido de Nala + Swoosh fregona-sable

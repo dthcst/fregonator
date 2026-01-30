@@ -102,7 +102,7 @@ El instalador:
 | Fregonator-Launcher.ps1 | GUI menu con sonidos |
 | Fregonator-Monitor.ps1 | GUI progreso tiempo real |
 | FREGONATOR-Installer.ps1 | Instalador nativo |
-| sounds/bark.wav | Ladrido de Nala |
+| _SONIDOS/bark.wav | Ladrido de Nala |
 
 ---
 
