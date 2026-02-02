@@ -27,6 +27,68 @@ $script:ProgressFile = "$env:PUBLIC\fregonator_progress.json"
 $script:BarkSound = Join-Path $script:ScriptPath "sounds\bark.wav"
 
 # ============================================================================
+# IDIOMA - Deteccion automatica + Traducciones
+# ============================================================================
+function Get-SystemLanguage {
+    $uiCulture = (Get-UICulture).Name
+    $culture = (Get-Culture).Name
+    foreach ($lang in @($uiCulture, $culture)) {
+        if ($lang -like "en*") { return "en" }
+        if ($lang -like "es*") { return "es" }
+        if ($lang -like "gl*") { return "es" }
+    }
+    return "en"  # Default internacional
+}
+
+$script:Lang = Get-SystemLanguage
+
+$script:Texts = @{
+    es = @{
+        limpiezaRapida = "LIMPIEZA RAPIDA"
+        limpiezaCompleta = "LIMPIEZA COMPLETA"
+        terminal = "TERMINAL MS-DOS"
+        salir = "SALIR"
+        descRapida = "Temporales, cache, papelera, RAM (8 tareas)"
+        descCompleta = "Todo + bloatware, telemetria, optimizacion (13 tareas)"
+        descTerminal = "Interfaz clasica con todas las opciones"
+        programar = "PROGRAMAR LIMPIEZA"
+        frecuencia = "Frecuencia:"
+        diaria = "Diaria (medianoche)"
+        semanal = "Semanal (domingos)"
+        inicioSesion = "Al iniciar sesion"
+        activar = "ACTIVAR"
+        cancelar = "CANCELAR"
+        infoLimpieza = "La limpieza se ejecutara en segundo plano`nusando el modo silencioso (sin ventanas)."
+        version = "v4.0"
+    }
+    en = @{
+        limpiezaRapida = "QUICK CLEANUP"
+        limpiezaCompleta = "FULL CLEANUP"
+        terminal = "TERMINAL MS-DOS"
+        salir = "EXIT"
+        descRapida = "Temp files, cache, recycle bin, RAM (8 tasks)"
+        descCompleta = "All + bloatware, telemetry, optimization (13 tasks)"
+        descTerminal = "Classic interface with all options"
+        programar = "SCHEDULE CLEANUP"
+        frecuencia = "Frequency:"
+        diaria = "Daily (midnight)"
+        semanal = "Weekly (Sundays)"
+        inicioSesion = "On login"
+        activar = "ACTIVATE"
+        cancelar = "CANCEL"
+        infoLimpieza = "Cleanup will run in the background`nusing silent mode (no windows)."
+        version = "v4.0"
+    }
+}
+
+function Get-Text($key) {
+    if ($script:Texts[$script:Lang] -and $script:Texts[$script:Lang][$key]) {
+        return $script:Texts[$script:Lang][$key]
+    }
+    return $script:Texts["en"][$key]
+}
+
+# ============================================================================
 # SONIDOS - Ladrido de Nala + Swoosh fregona-sable
 # ============================================================================
 $script:SoundEnabled = $true  # Toggle para activar/desactivar sonidos
@@ -194,7 +256,7 @@ function Start-FregonatorDual {
 # ============================================================================
 # BOTON 1 - LIMPIEZA RAPIDA
 # ============================================================================
-$btn1 = New-GlowButton -Titulo "LIMPIEZA RAPIDA" -Descripcion "Temporales, cache, papelera, RAM (8 tareas)" -Atajo "[1]" -Y 130 -OnClick {
+$btn1 = New-GlowButton -Titulo (Get-Text "limpiezaRapida") -Descripcion (Get-Text "descRapida") -Atajo "[1]" -Y 130 -OnClick {
     Start-FregonatorDual -Modo "-AutoRapida"
 }
 $form.Controls.Add($btn1)
@@ -202,7 +264,7 @@ $form.Controls.Add($btn1)
 # ============================================================================
 # BOTON 2 - LIMPIEZA COMPLETA
 # ============================================================================
-$btn2 = New-GlowButton -Titulo "LIMPIEZA COMPLETA" -Descripcion "Todo + bloatware, telemetria, optimizacion (13 tareas)" -Atajo "[2]" -Y 225 -OnClick {
+$btn2 = New-GlowButton -Titulo (Get-Text "limpiezaCompleta") -Descripcion (Get-Text "descCompleta") -Atajo "[2]" -Y 225 -OnClick {
     Start-FregonatorDual -Modo "-AutoAvanzada"
 }
 $form.Controls.Add($btn2)
@@ -210,7 +272,7 @@ $form.Controls.Add($btn2)
 # ============================================================================
 # BOTON 3 - MENU TERMINAL MS-DOS
 # ============================================================================
-$btn3 = New-GlowButton -Titulo "TERMINAL MS-DOS" -Descripcion "Interfaz clasica con todas las opciones" -Atajo "[3]" -Y 320 -OnClick {
+$btn3 = New-GlowButton -Titulo (Get-Text "terminal") -Descripcion (Get-Text "descTerminal") -Atajo "[3]" -Y 320 -OnClick {
     $form.Hide()
     Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$script:FregonatorScript`"" -Verb RunAs
     $form.Close()
@@ -415,7 +477,7 @@ $btnSalir.Add_Paint({
     $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::ClearTypeGridFit
     $fSalir = New-Object System.Drawing.Font($script:citaroFamily, 14)
     $color = if ($sender.Tag.Hover) { [System.Drawing.Color]::White } else { $script:ColGris }
-    $g.DrawString("[X] SALIR", $fSalir, (New-Object System.Drawing.SolidBrush($color)), 165, 14)
+    $g.DrawString("[X] $(Get-Text 'salir')", $fSalir, (New-Object System.Drawing.SolidBrush($color)), 165, 14)
 })
 
 $btnSalir.Add_MouseEnter({

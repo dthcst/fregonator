@@ -686,11 +686,21 @@ function T {
 
 # Detectar idioma del sistema (ES/EN)
 function Get-SystemLanguage {
+    # Usar UICulture (idioma de interfaz) en lugar de Culture (formato regional)
+    $uiCulture = (Get-UICulture).Name
     $culture = (Get-Culture).Name
-    switch -Wildcard ($culture) {
-        "en*" { return "en" }
-        default { return "es" }  # ES por defecto (incluye GL, ES, etc.)
+
+    # Primero verificar UICulture, luego Culture como fallback
+    foreach ($lang in @($uiCulture, $culture)) {
+        switch -Wildcard ($lang) {
+            "en*" { return "en" }
+            "es*" { return "es" }
+            "gl*" { return "es" }  # Gallego -> Español
+        }
     }
+
+    # Si Windows está en cualquier otro idioma, usar inglés como default internacional
+    return "en"
 }
 
 # Inicializar idioma desde sistema
