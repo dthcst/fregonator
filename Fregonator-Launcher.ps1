@@ -27,9 +27,17 @@ $script:ProgressFile = "$env:PUBLIC\fregonator_progress.json"
 $script:BarkSound = Join-Path $script:ScriptPath "sounds\bark.wav"
 
 # ============================================================================
-# IDIOMA - Deteccion automatica + Traducciones
+# IDIOMA - Preferencia guardada > Deteccion automatica
 # ============================================================================
 function Get-SystemLanguage {
+    # Primero verificar preferencia guardada
+    $configFile = "$env:LOCALAPPDATA\FREGONATOR\lang.txt"
+    if (Test-Path $configFile) {
+        $saved = (Get-Content $configFile -Raw).Trim()
+        if ($saved -eq "en" -or $saved -eq "es") { return $saved }
+    }
+
+    # Auto-detectar del sistema
     $uiCulture = (Get-UICulture).Name
     $culture = (Get-Culture).Name
     foreach ($lang in @($uiCulture, $culture)) {
@@ -533,6 +541,44 @@ $btnSound.Add_Click({
     $this.Invalidate()
 })
 $form.Controls.Add($btnSound)
+
+# ============================================================================
+# ICONO IDIOMA EN/ES (arriba derecha, al lado de sonido)
+# ============================================================================
+$btnLang = New-Object System.Windows.Forms.Button
+$btnLang.FlatStyle = "Flat"
+$btnLang.FlatAppearance.BorderSize = 0
+$btnLang.FlatAppearance.MouseOverBackColor = $script:ColBoton
+$btnLang.BackColor = $script:ColFondo
+$btnLang.Location = New-Object System.Drawing.Point(415, 55)
+$btnLang.Size = New-Object System.Drawing.Size(35, 35)
+$btnLang.Cursor = "Hand"
+
+$btnLang.Add_Paint({
+    param($sender, $e)
+    $g = $e.Graphics
+    $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::ClearTypeGridFit
+    $langText = $script:Lang.ToUpper()
+    $font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $brush = New-Object System.Drawing.SolidBrush($script:ColCyan)
+    $g.DrawString($langText, $font, $brush, 5, 8)
+})
+
+$btnLang.Add_Click({
+    # Toggle idioma
+    $script:Lang = if ($script:Lang -eq "es") { "en" } else { "es" }
+
+    # Guardar preferencia
+    $configFile = "$env:LOCALAPPDATA\FREGONATOR\lang.txt"
+    $configDir = Split-Path $configFile
+    if (-not (Test-Path $configDir)) { New-Item -ItemType Directory -Path $configDir -Force | Out-Null }
+    $script:Lang | Out-File $configFile -Force
+
+    # Reiniciar launcher para aplicar
+    $form.Close()
+    Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$($script:ScriptPath)\Fregonator-Launcher.ps1`"" -WindowStyle Hidden
+})
+$form.Controls.Add($btnLang)
 
 # ============================================================================
 # FOOTER

@@ -47,15 +47,24 @@ try {
 
     # Shortcuts
     Write-Host "  [4/4] Creating shortcut..." -ForegroundColor Yellow
-    $WshShell = New-Object -ComObject WScript.Shell
 
-    $desktopLink = "$env:USERPROFILE\Desktop\FREGONATOR.lnk"
-    $shortcut = $WshShell.CreateShortcut($desktopLink)
-    $shortcut.TargetPath = "$installPath\FREGONATOR.bat"
-    $shortcut.WorkingDirectory = $installPath
-    $shortcut.IconLocation = "$installPath\fregonator.ico"
-    $shortcut.Save()
-    Write-Host "        OK" -ForegroundColor Green
+    $batPath = "$installPath\FREGONATOR.bat"
+    $icoPath = "$installPath\fregonator.ico"
+
+    if (Test-Path $batPath) {
+        $WshShell = New-Object -ComObject WScript.Shell
+        $desktopLink = [System.IO.Path]::Combine([Environment]::GetFolderPath("Desktop"), "FREGONATOR.lnk")
+        $shortcut = $WshShell.CreateShortcut($desktopLink)
+        $shortcut.TargetPath = $batPath
+        $shortcut.WorkingDirectory = $installPath
+        if (Test-Path $icoPath) { $shortcut.IconLocation = $icoPath }
+        $shortcut.Save()
+        Write-Host "        OK - $desktopLink" -ForegroundColor Green
+    } else {
+        Write-Host "        Warning: FREGONATOR.bat not found" -ForegroundColor Yellow
+        Write-Host "        Files in $installPath :" -ForegroundColor Gray
+        Get-ChildItem $installPath -Name | ForEach-Object { Write-Host "          $_" -ForegroundColor Gray }
+    }
 
     # Cleanup
     Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
