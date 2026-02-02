@@ -1,5 +1,5 @@
 <#
-    FREGONATOR MONITOR v3.5.2
+    FREGONATOR MONITOR v4.0
     Panel de progreso en tiempo real
     - Oculto de barra de tareas (solo visible en pantalla)
     - Muestra actividad real (archivos/apps procesandose)
@@ -28,7 +28,7 @@ $LogoPath = Join-Path $ScriptPath "Logo-Fregonator-001.png"
 $FontPath = Join-Path $ScriptPath "_FUENTES\citaro_voor_dubbele_hoogte_breed\citaro_voor_dubbele_hoogte_breed.ttf"
 $AbortFile = "$env:PUBLIC\fregonator_abort.flag"
 $LauncherScript = Join-Path $ScriptPath "Fregonator-Launcher.ps1"
-$SoundPath = Join-Path $ScriptPath "_SONIDOS\bark.wav"
+$SoundPath = Join-Path $ScriptPath "sounds\bark.wav"
 
 # Cargar fuente Citaro
 $script:privateFonts = New-Object System.Drawing.Text.PrivateFontCollection
@@ -76,12 +76,18 @@ $form.BackColor = $script:ColFondo
 $form.TopMost = $true
 $form.ShowInTaskbar = $false  # No aparece en barra de tareas
 
-# Posicionar a la DERECHA de la pantalla
+# CENTRAR junto a la Terminal (1040x720)
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+$terminalWidth = 1040
+$terminalHeight = 720
+$gap = 10
+$totalWidth = $terminalWidth + $gap + $formWidth
+$startX = [int]($screen.X + ($screen.Width - $totalWidth) / 2)
+$monitorX = $startX + $terminalWidth + $gap
 $form.StartPosition = "Manual"
 $form.Location = New-Object System.Drawing.Point(
-    [int]($screen.Width - $formWidth - 20),  # Derecha con margen
-    [int](($screen.Height - $formHeight) / 2) # Centrado vertical
+    $monitorX,
+    [int]($screen.Y + ($screen.Height - $terminalHeight) / 2)
 )
 
 # =============================================================================
@@ -371,7 +377,7 @@ $btnVolver.Add_MouseEnter({ $this.ForeColor = [System.Drawing.Color]::Black })
 $btnVolver.Add_MouseLeave({ $this.ForeColor = $script:ColCyan })
 $btnVolver.Add_Click({
     $form.Hide()
-    Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$LauncherScript`""
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$LauncherScript`"" -WindowStyle Hidden
     $form.Close()
 })
 $pnlFinal.Controls.Add($btnVolver)

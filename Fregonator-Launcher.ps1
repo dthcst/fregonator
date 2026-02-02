@@ -1,9 +1,16 @@
 <#
-    FREGONATOR LAUNCHER v3.5.2
+    FREGONATOR LAUNCHER v4.0
     Menu principal con efecto Glow + Sonidos
     - Oculto de barra de tareas
     2026
 #>
+
+# Ocultar ventana de consola del Launcher
+Add-Type -Name Window -Namespace Console -MemberDefinition '
+[DllImport("Kernel32.dll")] public static extern IntPtr GetConsoleWindow();
+[DllImport("User32.dll")] public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
+'
+$null = [Console.Window]::ShowWindow([Console.Window]::GetConsoleWindow(), 0)
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -17,19 +24,27 @@ $script:MonitorScript = Join-Path $script:ScriptPath "Fregonator-Monitor.ps1"
 $script:LogoPath = Join-Path $script:ScriptPath "Logo-Fregonator-001.png"
 $script:FontPath = Join-Path $script:ScriptPath "_FUENTES\citaro_voor_dubbele_hoogte_breed\citaro_voor_dubbele_hoogte_breed.ttf"
 $script:ProgressFile = "$env:PUBLIC\fregonator_progress.json"
-$script:BarkSound = Join-Path $script:ScriptPath "_SONIDOS\bark.wav"
+$script:BarkSound = Join-Path $script:ScriptPath "sounds\bark.wav"
 
 # ============================================================================
 # SONIDOS - Ladrido de Nala + Swoosh fregona-sable
 # ============================================================================
+$script:SoundEnabled = $true  # Toggle para activar/desactivar sonidos
 $script:SoundPlayer = $null
 if (Test-Path $script:BarkSound) {
     $script:SoundPlayer = New-Object System.Media.SoundPlayer($script:BarkSound)
 }
 
+# Funcion para reproducir ladrido (respeta toggle)
+function Play-Bark {
+    if ($script:SoundEnabled -and $script:SoundPlayer) {
+        try { $script:SoundPlayer.Play() } catch {}
+    }
+}
+
 # Funcion para sonido hover tipo "fregona-sable" (swoosh ascendente)
 function Play-HoverSound {
-    # Swoosh rapido: frecuencia sube de 400 a 800 Hz en 50ms
+    if (-not $script:SoundEnabled) { return }
     try {
         [Console]::Beep(500, 30)
     } catch {}
@@ -49,7 +64,7 @@ if (Test-Path $script:FontPath) {
 # ============================================================================
 # COLORES - Paleta Daft Punk / Tron
 # ============================================================================
-$script:ColFondo    = [System.Drawing.Color]::FromArgb(8, 8, 12)
+$script:ColFondo    = [System.Drawing.Color]::FromArgb(13, 13, 13)  # #0D0D0D
 $script:ColBoton    = [System.Drawing.Color]::FromArgb(15, 15, 20)
 $script:ColCyan     = [System.Drawing.Color]::FromArgb(0, 255, 255)
 $script:ColCyanDark = [System.Drawing.Color]::FromArgb(0, 180, 180)
@@ -74,7 +89,7 @@ $form.MaximizeBox = $false
 
 # Centrar manualmente en pantalla
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
-$form.StartPosition = "Manual"
+$form.StartPosition = "CenterScreen"
 $form.Location = New-Object System.Drawing.Point(
     [int](($screen.Width - $formWidth) / 2),
     [int](($screen.Height - $formHeight) / 2)
@@ -90,6 +105,8 @@ if (Test-Path $script:LogoPath) {
     $picLogo.Location = New-Object System.Drawing.Point(40, 20)
     $picLogo.Size = New-Object System.Drawing.Size(420, 100)
     $picLogo.BackColor = $script:ColFondo
+    $picLogo.Cursor = "Hand"
+    $picLogo.Add_Click({ Start-Process "https://fregonator.com" })
     $form.Controls.Add($picLogo)
 }
 
@@ -191,9 +208,9 @@ $btn2 = New-GlowButton -Titulo "LIMPIEZA COMPLETA" -Descripcion "Todo + bloatwar
 $form.Controls.Add($btn2)
 
 # ============================================================================
-# BOTON 3 - MENU TERMINAL
+# BOTON 3 - MENU TERMINAL MS-DOS
 # ============================================================================
-$btn3 = New-GlowButton -Titulo "MENU TERMINAL" -Descripcion "Modo avanzado con todas las opciones" -Atajo "[3]" -Y 320 -OnClick {
+$btn3 = New-GlowButton -Titulo "TERMINAL MS-DOS" -Descripcion "Interfaz clasica con todas las opciones" -Atajo "[3]" -Y 320 -OnClick {
     $form.Hide()
     Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$script:FregonatorScript`"" -Verb RunAs
     $form.Close()
@@ -411,10 +428,55 @@ $btnSalir.Add_Click({ $form.Close() })
 $form.Controls.Add($btnSalir)
 
 # ============================================================================
+# ICONO SOUND ON/OFF (arriba derecha)
+# ============================================================================
+$btnSound = New-Object System.Windows.Forms.Button
+$btnSound.FlatStyle = "Flat"
+$btnSound.FlatAppearance.BorderSize = 0
+$btnSound.FlatAppearance.MouseOverBackColor = $script:ColBoton
+$btnSound.BackColor = $script:ColFondo
+$btnSound.Location = New-Object System.Drawing.Point(455, 55)
+$btnSound.Size = New-Object System.Drawing.Size(35, 35)
+$btnSound.Cursor = "Hand"
+
+$btnSound.Add_Paint({
+    param($sender, $e)
+    $g = $e.Graphics
+    $g.SmoothingMode = "AntiAlias"
+    $color = if ($script:SoundEnabled) { $script:ColCyan } else { $script:ColGris }
+    $brush = New-Object System.Drawing.SolidBrush($color)
+    $pen = New-Object System.Drawing.Pen($color, 2)
+    # Dibujar altavoz
+    $g.FillPolygon($brush, @(
+        (New-Object System.Drawing.Point(8, 12)),
+        (New-Object System.Drawing.Point(14, 12)),
+        (New-Object System.Drawing.Point(20, 6)),
+        (New-Object System.Drawing.Point(20, 28)),
+        (New-Object System.Drawing.Point(14, 22)),
+        (New-Object System.Drawing.Point(8, 22))
+    ))
+    if ($script:SoundEnabled) {
+        # Ondas de sonido
+        $g.DrawArc($pen, 22, 10, 8, 14, -60, 120)
+    } else {
+        # X de mute
+        $penX = New-Object System.Drawing.Pen($script:ColRojo, 2)
+        $g.DrawLine($penX, 24, 10, 32, 24)
+        $g.DrawLine($penX, 24, 24, 32, 10)
+    }
+})
+
+$btnSound.Add_Click({
+    $script:SoundEnabled = -not $script:SoundEnabled
+    $this.Invalidate()
+})
+$form.Controls.Add($btnSound)
+
+# ============================================================================
 # FOOTER
 # ============================================================================
 $lblVersion = New-Object System.Windows.Forms.Label
-$lblVersion.Text = "v3.5.2"
+$lblVersion.Text = "v4.0"
 $lblVersion.Font = New-Object System.Drawing.Font("Consolas", 8)
 $lblVersion.ForeColor = [System.Drawing.Color]::FromArgb(50, 50, 55)
 $lblVersion.Location = New-Object System.Drawing.Point(40, 485)
@@ -434,11 +496,15 @@ $lblFooter.Add_MouseLeave({ $this.ForeColor = [System.Drawing.Color]::FromArgb(5
 $form.Controls.Add($lblFooter)
 
 $lblCredits = New-Object System.Windows.Forms.Label
-$lblCredits.Text = "Claude Code"
+$lblCredits.Text = "costa-da-morte.com"
 $lblCredits.Font = New-Object System.Drawing.Font("Segoe UI", 7)
 $lblCredits.ForeColor = [System.Drawing.Color]::FromArgb(40, 40, 45)
-$lblCredits.Location = New-Object System.Drawing.Point(410, 487)
+$lblCredits.Location = New-Object System.Drawing.Point(370, 487)
 $lblCredits.AutoSize = $true
+$lblCredits.Cursor = "Hand"
+$lblCredits.Add_Click({ Start-Process "https://costa-da-morte.com" })
+$lblCredits.Add_MouseEnter({ $this.ForeColor = $script:ColCyan })
+$lblCredits.Add_MouseLeave({ $this.ForeColor = [System.Drawing.Color]::FromArgb(40, 40, 45) })
 $form.Controls.Add($lblCredits)
 
 # ============================================================================
@@ -465,9 +531,7 @@ $form.KeyPreview = $true
 # EVENTO AL MOSTRAR - Ladrido de Nala
 # ============================================================================
 $form.Add_Shown({
-    if ($script:SoundPlayer) {
-        try { $script:SoundPlayer.Play() } catch {}
-    }
+    Play-Bark
 })
 
 # ============================================================================

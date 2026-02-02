@@ -1,5 +1,5 @@
 ﻿# =============================================================================
-# FREGONATOR v3.5.2 - OPTIMIZADOR DE PC
+# FREGONATOR v4.0 - OPTIMIZADOR DE PC
 # El modulo DEFINITIVO: Limpieza Rapida / Avanzada / Profunda
 # 100% nativo Windows - Sin dependencias externas
 # www.fregonator.com | ARCAMIA-MEMMEM
@@ -32,7 +32,7 @@ param(
 # Mostrar ayuda si se solicita
 if ($Help) {
     Write-Host ""
-    Write-Host "  FREGONATOR v3.5.2 - Optimizador de PC" -ForegroundColor Cyan
+    Write-Host "  FREGONATOR v4.0 - Optimizador de PC" -ForegroundColor Cyan
     Write-Host "  ======================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "  USO:" -ForegroundColor Yellow
@@ -87,6 +87,10 @@ Clear-Host
 # Solo en modo GUI (cuando viene del Launcher)
 # =============================================================================
 if ($script:ModoGUI) {
+    # Columnas suficientes para el logo ASCII grande
+    cmd /c "mode con cols=130"
+    Start-Sleep -Milliseconds 200
+
     Add-Type @"
     using System;
     using System.Runtime.InteropServices;
@@ -101,6 +105,11 @@ if ($script:ModoGUI) {
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
         [DllImport("user32.dll")]
         public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT { public int Left, Top, Right, Bottom; }
 
         private const int GWL_EXSTYLE = -20;
         private const int WS_EX_APPWINDOW = 0x40000;
@@ -108,7 +117,7 @@ if ($script:ModoGUI) {
         private const uint SWP_NOZORDER = 0x4;
         private const uint SWP_FRAMECHANGED = 0x20;
 
-        public static void Setup(int screenWidth, int screenHeight) {
+        public static void Setup(int screenX, int screenY, int screenWidth, int screenHeight) {
             IntPtr hwnd = GetConsoleWindow();
 
             // Ocultar de barra de tareas
@@ -117,17 +126,23 @@ if ($script:ModoGUI) {
             SetWindowLong(hwnd, GWL_EXSTYLE, style);
             SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0, 0x2 | 0x1 | SWP_NOZORDER | SWP_FRAMECHANGED);
 
-            // Posicionar a la IZQUIERDA (Terminal ocupa ~70% del ancho)
-            int terminalWidth = (int)(screenWidth * 0.70);
-            int terminalHeight = screenHeight - 40;  // Margen para barra de tareas
-            MoveWindow(hwnd, 0, 0, terminalWidth, terminalHeight, true);
+            // Tamaño: 130 cols = ~1040px, altura para contenido
+            int terminalWidth = 1040;
+            int terminalHeight = 720;
+
+            // CENTRAR ambas ventanas juntas en monitor principal
+            int monitorWidth = 480;
+            int gap = 10;
+            int totalWidth = terminalWidth + gap + monitorWidth;
+            int posX = screenX + (screenWidth - totalWidth) / 2;
+            int posY = screenY + (screenHeight - terminalHeight) / 2;
+            MoveWindow(hwnd, posX, posY, terminalWidth, terminalHeight, true);
         }
     }
 "@
-    # Obtener tamaño de pantalla
     Add-Type -AssemblyName System.Windows.Forms
     $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
-    [ConsoleWindow]::Setup($screen.Width, $screen.Height)
+    [ConsoleWindow]::Setup($screen.X, $screen.Y, $screen.Width, $screen.Height)
 }
 
 # NOTA: Mutex eliminado en v3.1 - causaba bloqueos al volver al menu
@@ -275,7 +290,7 @@ function Show-NalaSplash {
         Start-Sleep -Milliseconds 30
     }
     # Woof woof! Ladrido de Nala
-    $barkPath = "$PSScriptRoot\_FREGONATOR\_SONIDOS\bark.wav"
+    $barkPath = "$PSScriptRoot\sounds\bark.wav"
     if (Test-Path $barkPath) {
         try {
             $bark = New-Object System.Media.SoundPlayer $barkPath
@@ -303,7 +318,7 @@ Set-FondoOscuro
 # =============================================================================
 
 $script:CONFIG = @{
-    Version = "v3.1"
+    Version = "v4.0"
     LogPath = "$env:USERPROFILE\Documents\ARCAMIA-MEMMEM\Logs\FREGONATOR"
     HistorialPath = "$env:USERPROFILE\Documents\ARCAMIA-MEMMEM\Logs\FREGONATOR\historial.json"
     Idioma = "es"  # es, gl, en
@@ -1030,14 +1045,21 @@ function Show-Comparativa {
         $despuesGB = [math]::Round($despues / 1GB, 2)
         $ahorroMB = [math]::Round($ahorro / 1MB, 0)
 
+        # Ancho fijo del cuadro (65 caracteres internos)
+        $boxWidth = 65
+        $titulo = "ESPACIO EN DISCO C: ($(T 'comparativaAntes')/$(T 'comparativaDespues'))"
+        $linea1 = "$(T 'comparativaAntes'):   $antesGB GB libre"
+        $linea2 = "$(T 'comparativaDespues'): $despuesGB GB libre"
+        $linea3 = "$(T 'comparativaAhorro'):  +$ahorroMB MB"
+
         Write-Host ""
-        Write-Host "    ┌─────────────────────────────────────────────────────────────────┐" -ForegroundColor Cyan
-        Write-Host "    │           ESPACIO EN DISCO C: ($(T 'comparativaAntes')/$(T 'comparativaDespues'))                      │" -ForegroundColor Cyan
-        Write-Host "    ├─────────────────────────────────────────────────────────────────┤" -ForegroundColor DarkGray
-        Write-Host "    │  $(T 'comparativaAntes'):   $antesGB GB libre                                           │" -ForegroundColor Gray
-        Write-Host "    │  $(T 'comparativaDespues'): $despuesGB GB libre                                           │" -ForegroundColor White
-        Write-Host "    │  $(T 'comparativaAhorro'):  +$ahorroMB MB                                                │" -ForegroundColor Green
-        Write-Host "    └─────────────────────────────────────────────────────────────────┘" -ForegroundColor Cyan
+        Write-Host "    ┌$('─' * $boxWidth)┐" -ForegroundColor Cyan
+        Write-Host "    │$($titulo.PadLeft(($boxWidth + $titulo.Length) / 2).PadRight($boxWidth))│" -ForegroundColor Cyan
+        Write-Host "    ├$('─' * $boxWidth)┤" -ForegroundColor DarkGray
+        Write-Host "    │  $($linea1.PadRight($boxWidth - 2))│" -ForegroundColor Gray
+        Write-Host "    │  $($linea2.PadRight($boxWidth - 2))│" -ForegroundColor White
+        Write-Host "    │  $($linea3.PadRight($boxWidth - 2))│" -ForegroundColor Green
+        Write-Host "    └$('─' * $boxWidth)┘" -ForegroundColor Cyan
     }
 }
 
@@ -1330,7 +1352,7 @@ function Export-FregonatorHTML {
         <div class="Copyright">
             <div>$fecha</div>
             <div class="branding">
-                <span class="logo-text">FREGONATOR v3.1 | ARCAMIA-MEMMEM</span>
+                <span class="logo-text">FREGONATOR v4.0 | ARCAMIA-MEMMEM</span>
                 <span>
                     <a href="https://www.fregonator.com">fregonator.com</a> |
                     <a href="https://www.costa-da-morte.com">costa-da-morte.com</a>
@@ -1401,7 +1423,7 @@ function Show-FregonatorSplash {
         "                         _____|  |_____",
         "                        /              \",
         "                       |   FREGONATOR   |",
-        "                       |     v3.1       |",
+        "                       |     v4.0     |",
         "                        \______________/",
         "                         |||||||||||||||",
         "                         |||||||||||||||",
@@ -1716,7 +1738,7 @@ function Show-HealthCheckResult {
         Write-Host "    ║  Disco: $($Health.Info.DiskModel.PadRight(55))║" -ForegroundColor White
     }
     if ($Health.Info.DiskSize) {
-        Write-Host "    ║  Tamano: $($Health.Info.DiskSize.PadRight(54))║" -ForegroundColor Gray
+        Write-Host "    ║  Tamaño: $($Health.Info.DiskSize.PadRight(54))║" -ForegroundColor Gray
     }
     if ($Health.Info.MediaType) {
         Write-Host "    ║  Tipo: $($Health.Info.MediaType.PadRight(56))║" -ForegroundColor Gray
@@ -2571,7 +2593,17 @@ $script:FrasesThinking = @(
     "Tuneanding", "Ordenanding", "Cafeinanding", "Preparanding",
     "Molanding", "Curranding", "Vibeanding", "Chillanding",
     "Nalaing", "Ladrandoing", "Aturuxanding", "Brillanding",
-    "Mejorandoing", "Acelerandoing", "Pulindoing", "Afinanding"
+    "Mejorandoing", "Acelerandoing", "Pulindoing", "Afinanding",
+    "Freganding", "Barriending", "Aspiranding", "Desatascanding",
+    "Turboanding", "Nitroanding", "Boostingando", "Poweranding",
+    "Hackeanding", "Debuganding", "Compilanding", "Deployanding",
+    "Galaxeanding", "Cosmicanding", "Quantumanding", "Matrixanding",
+    "Rockanding", "Metalanding", "Punkanding", "Synthanding",
+    "Pizzanding", "Kebabanding", "Tacoing", "Sushianding",
+    "Siestando", "Yoganding", "Zenanding", "Meditanding",
+    "Mikianding", "Donalding", "Goofyanding", "Plutoanding",
+    "Jedianding", "Sithanding", "Forcingando", "Sabreanding",
+    "Galleganding", "Morrinanding", "Meigandering", "Retrancanding"
 )
 
 $script:ColoresArcoiris = @("Red", "DarkYellow", "Yellow", "Green", "Cyan", "Blue", "Magenta")
@@ -2595,16 +2627,13 @@ function Start-OneClick {
 
     # ADVERTENCIA para PCs desactualizados
     Write-Host ""
-    Write-Host "    ╔═══════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Yellow
-    Write-Host "    ║  [!] NOTA: En PCs desactualizados, winget y Windows Update pueden        ║" -ForegroundColor Yellow
-    Write-Host "    ║      tardar varios minutos. Esto es NORMAL, no significa que se colgo.   ║" -ForegroundColor Yellow
-    Write-Host "    ║      Pulsa [ESC] en cualquier momento para abortar.                      ║" -ForegroundColor Yellow
-    Write-Host "    ╚═══════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Yellow
+    Write-Host "    [!] NOTA: En PCs desactualizados, winget y Windows Update pueden" -ForegroundColor Yellow
+    Write-Host "        tardar varios minutos. Esto es NORMAL. Pulsa [ESC] para abortar." -ForegroundColor Yellow
     Write-Host ""
     Start-Sleep -Milliseconds 1500
 
     $tareas = @(
-        @{ Nombre = "Liberando RAM"; Detalle = "Ejecutando: System.GC.Collect()"; Codigo = { [System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers(); "OK" } }
+        @{ Nombre = "Liberando RAM"; Detalle = "Optimizando Working Sets..."; Codigo = { [System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers(); [System.GC]::Collect(); "OK" } }
         @{ Nombre = "Limpiando temporales"; Detalle = "Eliminando: %TEMP%\*.tmp, *.log, *.cache"; Codigo = {
             $t = 0; @("$env:TEMP","$env:windir\Temp") | ForEach-Object {
                 if (Test-Path $_) { Get-ChildItem $_ -Recurse -Force -EA 0 | ForEach-Object { $t += $_.Length; Remove-Item $_.FullName -Force -Recurse -EA 0 } }
@@ -2922,11 +2951,8 @@ function Start-OneClickAvanzada {
 
     # ADVERTENCIA para PCs desactualizados
     Write-Host ""
-    Write-Host "    ╔═══════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Yellow
-    Write-Host "    ║  [!] NOTA: En PCs desactualizados, winget y Windows Update pueden        ║" -ForegroundColor Yellow
-    Write-Host "    ║      tardar varios minutos. Esto es NORMAL, no significa que se colgo.   ║" -ForegroundColor Yellow
-    Write-Host "    ║      Pulsa [ESC] en cualquier momento para abortar.                      ║" -ForegroundColor Yellow
-    Write-Host "    ╚═══════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Yellow
+    Write-Host "    [!] NOTA: En PCs desactualizados, winget y Windows Update pueden" -ForegroundColor Yellow
+    Write-Host "        tardar varios minutos. Esto es NORMAL. Pulsa [ESC] para abortar." -ForegroundColor Yellow
     Write-Host ""
     Start-Sleep -Milliseconds 1500
 
@@ -2947,7 +2973,7 @@ function Start-OneClickAvanzada {
     # PASO 2: Todas las tareas en paralelo (con detalles para el Monitor)
     $tareas = @(
         # Basicas (8)
-        @{ Nombre = "Liberando RAM"; Detalle = "Ejecutando: System.GC.Collect()"; Codigo = { [System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers(); "OK" } }
+        @{ Nombre = "Liberando RAM"; Detalle = "Optimizando Working Sets..."; Codigo = { [System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers(); [System.GC]::Collect(); "OK" } }
         @{ Nombre = "Limpiando temporales"; Detalle = "Eliminando: %TEMP%\*.tmp, *.log, *.cache"; Codigo = {
             $t = 0; @("$env:TEMP","$env:windir\Temp","$env:LOCALAPPDATA\Temp") | ForEach-Object {
                 if (Test-Path $_) { Get-ChildItem $_ -Recurse -Force -EA 0 | ForEach-Object { $t += $_.Length; Remove-Item $_.FullName -Force -Recurse -EA 0 } }
@@ -3597,7 +3623,7 @@ function Show-MenuPrincipal {
     Write-Host ""
     $upArrow = [char]0x2190  # ←
     $downArrow = [char]0x2192  # →
-    Write-Host "    $upArrow$downArrow Mover   ENTER Ejecutar   [1][2][A][S][L][X] Atajo" -ForegroundColor DarkCyan
+    Write-Host "    $upArrow$downArrow Mover   ENTER Ejecutar   [1][2][A][S][R][D][P][H][L][X] Atajo" -ForegroundColor DarkCyan
     Write-Host ""
     Write-Host "    Opcion: " -NoNewline -ForegroundColor Yellow
 }
@@ -3627,7 +3653,7 @@ if ($AutoAvanzada) {
 if ($script:SilentMode) {
     # Modo silencioso: ejecutar y salir
     Write-Host ""
-    Write-Host "  FREGONATOR v3.1 - Modo Silencioso" -ForegroundColor Cyan
+    Write-Host "  FREGONATOR v4.0 - Modo Silencioso" -ForegroundColor Cyan
     Write-Host "  =====================================" -ForegroundColor Cyan
     Write-Host ""
 
@@ -3773,6 +3799,12 @@ while ($true) {
     # Leer tecla
     $key = [Console]::ReadKey($true)
 
+    # Mostrar la tecla presionada (eco visual)
+    if ($key.KeyChar -match '[0-9a-zA-Z]') {
+        Write-Host $key.KeyChar.ToString().ToUpper() -NoNewline -ForegroundColor Cyan
+        Start-Sleep -Milliseconds 150
+    }
+
     switch ($key.Key) {
         "LeftArrow" {
             if ($selectedOption -ne 1) {
@@ -3824,14 +3856,14 @@ while ($true) {
             Write-Host "    ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
             Write-Host "    ║                         IDIOMA / LANGUAGE                         ║" -ForegroundColor Cyan
             Write-Host "    ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor Cyan
-            Write-Host "    ║  [1] Espanol                                                      ║" -ForegroundColor White
+            Write-Host "    ║  [1] Español                                                      ║" -ForegroundColor White
             Write-Host "    ║  [2] English                                                      ║" -ForegroundColor White
             Write-Host "    ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
             Write-Host ""
             Write-Host "    Option / Opcion: " -NoNewline -ForegroundColor Yellow
             $idiomaOp = Read-Host
             switch ($idiomaOp) {
-                "1" { $script:CONFIG.Idioma = "es"; Write-Host "    Idioma: Espanol" -ForegroundColor Green }
+                "1" { $script:CONFIG.Idioma = "es"; Write-Host "    Idioma: Español" -ForegroundColor Green }
                 "2" { $script:CONFIG.Idioma = "en"; Write-Host "    Language: English" -ForegroundColor Green }
             }
             Start-Sleep 1

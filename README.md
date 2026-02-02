@@ -1,20 +1,43 @@
-# FREGONATOR v3.5.2
+# FREGONATOR v4.0
 
 ## Optimizador de PC para Windows
 
 FREGONATOR es un optimizador de PC gratuito, seguro y transparente. Limpia archivos temporales, libera RAM, actualiza drivers y elimina bloatware.
 
+**Descarga:** https://fregonator.pages.dev
+
 ---
 
-## Caracteristicas
+## Características
 
 | Aspecto | FREGONATOR | CCleaner |
 |---------|------------|----------|
-| Precio | Gratis | 30 EUR/ano |
-| Tamano | ~160 KB | ~50 MB |
-| Telemetria | Ninguna | Si (Avast) |
-| Codigo | PowerShell visible | Cerrado |
-| Ejecucion | Paralela (8-13 tareas) | Secuencial |
+| Precio | Gratis | 30 EUR/año |
+| Instalador | 2.2 MB | ~50 MB |
+| Portable | 165 KB | N/A |
+| Telemetría | Ninguna | Sí (Avast) |
+| Código | PowerShell visible | Cerrado |
+| Ejecución | Paralela (8-13 tareas) | Secuencial |
+
+---
+
+## Instalación
+
+### Opción 1: Instalador (recomendado)
+```
+Descargar FREGONATOR-4.0-Setup.exe y ejecutar
+```
+- Wizard de instalación profesional
+- Multi-idioma (Español/English)
+- Acceso directo en Escritorio
+- Entrada en Menú Inicio
+- Desinstalador incluido
+
+### Opción 2: Portable (sin instalar)
+```
+Descomprimir FREGONATOR-4.0-Setup.zip
+Ejecutar FREGONATOR.bat
+```
 
 ---
 
@@ -41,68 +64,35 @@ Doble clic en FREGONATOR.bat
 
 ## Funciones
 
-### [1] LIMPIEZA RAPIDA (8 tareas, ~30 seg)
+### [1] LIMPIEZA RÁPIDA (8 tareas, ~30 seg)
 - Liberar RAM
 - Limpiar archivos temporales
 - Vaciar papelera
-- Limpiar cache DNS
+- Limpiar caché DNS
 - Optimizar discos (TRIM SSD)
-- Plan energia alto rendimiento
+- Plan energía alto rendimiento
 - Actualizar apps (winget)
 - Verificar Windows Update
 
 ### [2] LIMPIEZA COMPLETA (13 tareas)
-Todo lo anterior MAS:
+Todo lo anterior MÁS:
 - Eliminar bloatware (CandyCrush, Solitaire, Bing, Xbox)
-- Desactivar telemetria
+- Desactivar telemetría
 - Limpiar registro MRU
 - Matar procesos innecesarios
 - Optimizar efectos visuales
 
-### [3] MENU TERMINAL
+### [3] TERMINAL MS-DOS
 Opciones adicionales:
-- [D] Driver Updater - Actualizar drivers via Windows Update
+- [D] Driver Updater - Actualizar drivers vía Windows Update
 - [A] Desinstalar apps
 - [S] Apps de arranque
 - [R] Monitor de rendimiento
-- [P] Programar limpieza automatica
+- [P] Programar limpieza automática
 - [H] Historial de limpiezas
 - [L] Ver logs
 - DISM + SFC (reparar Windows)
 - Limpieza profunda (5-50 GB)
-
----
-
-## Instalacion
-
-### Opcion 1: Portable (recomendado)
-```
-Descomprimir y ejecutar FREGONATOR.bat
-```
-
-### Opcion 2: Instalar en Program Files
-```
-Doble clic en INSTALAR.bat
-```
-
-El instalador:
-- Copia a `C:\Program Files\FREGONATOR\`
-- Crea acceso directo en Escritorio
-- Crea entrada en Menu Inicio
-- Registra en "Agregar o quitar programas"
-
----
-
-## Archivos
-
-| Archivo | Descripcion |
-|---------|-------------|
-| FREGONATOR.bat | Punto de entrada (doble clic) |
-| Fregonator.ps1 | Motor principal (~3700 lineas) |
-| Fregonator-Launcher.ps1 | GUI menu con sonidos |
-| Fregonator-Monitor.ps1 | GUI progreso tiempo real |
-| FREGONATOR-Installer.ps1 | Instalador nativo |
-| _SONIDOS/bark.wav | Ladrido de Nala |
 
 ---
 
@@ -115,14 +105,14 @@ El instalador:
 
 ## Seguridad
 
-- **Codigo abierto**: Todo en PowerShell visible
-- **Sin telemetria**: No envia datos a ningun servidor
-- **Sin navegadores**: No toca contrasenas ni sesiones
+- **Código abierto**: Todo en PowerShell visible
+- **Sin telemetría**: No envía datos a ningún servidor
+- **Sin navegadores**: No toca contraseñas ni sesiones
 - **Bloatware seguro**: No elimina Spotify, Netflix, etc.
 
 ---
 
-## Creditos
+## Créditos
 
 Desarrollado con Claude Code (Anthropic)
 Costa da Morte - www.costa-da-morte.com

@@ -1,5 +1,5 @@
 <#
-    FREGONATOR v3.3 - Instalador Nativo PowerShell
+    FREGONATOR v4.0 - Instalador Nativo PowerShell
     - Instala en Program Files
     - Crea acceso directo en Escritorio y Menu Inicio
     - Registra en "Agregar o quitar programas"
@@ -17,7 +17,7 @@ $ErrorActionPreference = "Stop"
 # CONFIGURACION
 # ============================================================================
 $AppName = "FREGONATOR"
-$AppVersion = "3.4.0"
+$AppVersion = "4.0"
 $AppPublisher = "Costa da Morte / Claude Code"
 $AppURL = "https://fregonator.com"
 $InstallDir = "$env:ProgramFiles\$AppName"
@@ -126,7 +126,7 @@ foreach ($archivo in $archivos) {
         $faltantes += $archivo
     }
 }
-if (-not (Test-Path "$InstallerDir\_SONIDOS\bark.wav")) { $faltantes += "_SONIDOS\bark.wav" }
+if (-not (Test-Path "$InstallerDir\sounds\bark.wav")) { $faltantes += "sounds\bark.wav" }
 
 if ($faltantes.Count -gt 0) {
     Write-Host ""
@@ -167,7 +167,7 @@ if (Test-Path $InstallDir) {
     Remove-Item $InstallDir -Recurse -Force
 }
 New-Item -Path $InstallDir -ItemType Directory -Force | Out-Null
-New-Item -Path "$InstallDir\_SONIDOS" -ItemType Directory -Force | Out-Null
+New-Item -Path "$InstallDir\sounds" -ItemType Directory -Force | Out-Null
 New-Item -Path "$InstallDir\_FUENTES\citaro_voor_dubbele_hoogte_breed" -ItemType Directory -Force | Out-Null
 
 # PASO 2: Copiar archivos
@@ -175,7 +175,7 @@ Show-Progress 2 5 "Copiando archivos..."
 foreach ($archivo in $archivos) {
     Copy-Item "$InstallerDir\$archivo" "$InstallDir\$archivo" -Force
 }
-Copy-Item "$InstallerDir\_SONIDOS\*" "$InstallDir\_SONIDOS\" -Force -ErrorAction SilentlyContinue
+Copy-Item "$InstallerDir\sounds\*" "$InstallDir\sounds\" -Force -ErrorAction SilentlyContinue
 if (Test-Path "$InstallerDir\_FUENTES\citaro_voor_dubbele_hoogte_breed") {
     Copy-Item "$InstallerDir\_FUENTES\citaro_voor_dubbele_hoogte_breed\*" "$InstallDir\_FUENTES\citaro_voor_dubbele_hoogte_breed\" -Force -ErrorAction SilentlyContinue
 }
