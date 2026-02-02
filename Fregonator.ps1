@@ -241,6 +241,13 @@ Update-Monitor -Etapa "FREGONATOR" -Progreso 0 -Log $_initMsg
 # SPLASH SCREEN - NALA
 # =============================================================================
 function Show-NalaSplash {
+    # Verificar si el splash está deshabilitado
+    $splashConfig = "$env:LOCALAPPDATA\FREGONATOR\splash.txt"
+    if (Test-Path $splashConfig) {
+        $splashEnabled = (Get-Content $splashConfig -Raw).Trim()
+        if ($splashEnabled -eq "off") { return }
+    }
+
     Clear-Host
     $cocoColors = @("DarkYellow","Yellow","Magenta","Red","DarkMagenta","Blue","Cyan","Green")
     $nalaArt = @(
@@ -283,17 +290,22 @@ function Show-NalaSplash {
         "                     |XXX|ooooo.ooooooooooooooooooooooooooooooo\  ",
         "                   /oo\X/oooo..ooooooooooooooooooooooooooooooooo\  ",
         "                 /ooooooo..ooooo..oooooooooooooooooooooooooooooo\ ",
-        "               /oooooooooooooooooooooooooooooooooooooooooooooooooo\ ",
-        "",
-        "                                    NALA  /  Annie  /  Todos  /  ...",
-        ""
+        "               /oooooooooooooooooooooooooooooooooooooooooooooooooo\ "
     )
     $colorIndex = 0
     foreach ($line in $nalaArt) {
         Write-Host $line -ForegroundColor $cocoColors[$colorIndex % $cocoColors.Count]
         $colorIndex++
-        Start-Sleep -Milliseconds 30
+        Start-Sleep -Milliseconds 25
     }
+
+    # Texto de mascotas traducido
+    $nalaText = T "splashNala"
+    $padding = [int]((80 - $nalaText.Length) / 2)
+    Write-Host ""
+    Write-Host "$(' ' * $padding)$nalaText" -ForegroundColor DarkCyan
+    Write-Host ""
+
     # Woof woof! Ladrido de Nala
     $barkPath = "$PSScriptRoot\sounds\bark.wav"
     if (Test-Path $barkPath) {
@@ -305,9 +317,9 @@ function Show-NalaSplash {
         } catch {}
     }
     Write-Host ""
-    Write-Host "                              Cargando FREGONATOR..." -ForegroundColor Cyan
+    Write-Host "                              $(T 'splashCargando')" -ForegroundColor Cyan
     Write-Host ""
-    Start-Sleep -Milliseconds 400
+    Start-Sleep -Milliseconds 1000  # 1 segundo completo
 }
 
 # Fondo oscuro - 100% standalone, sin dependencias
@@ -433,6 +445,44 @@ $script:IDIOMAS = @{
         mbLiberados = "{0} MB liberados"
         tiempoTranscurrido = "Tiempo transcurrido"
         tiempoRestante = "Tiempo restante aproximado"
+        # Header
+        simpleFuncional = "SIMPLE · FUNCIONAL"
+        clonaDisco = "Clona tu DISCO con UN CLICK"
+        optimizaPC = "Optimiza tu PC con UN CLICK"
+        unClickOptimizacion = "UN CLICK - OPTIMIZACION PARALELA"
+        unClickAvanzada = "UN CLICK AVANZADA - OPTIMIZACION TOTAL"
+        limpiezaProfunda = "LIMPIEZA PROFUNDA - Liberar 5-50 GB"
+        modoAvanzado = "MODO AVANZADO"
+        # Menu MS-DOS
+        menuLimpiezaRapida = "LIMPIEZA RAPIDA"
+        menuLimpiezaAvanzada = "LIMPIEZA AVANZADA"
+        menu8Tareas = "8 tareas en paralelo"
+        menu13Tareas = "13 tareas + opciones"
+        menu30Seg = "~30 segundos"
+        menuDISMOpcional = "+ DISM/SFC opcional"
+        menuProfunda = "+ Limpieza profunda"
+        menuTodoRapida = "Todo lo de Rapida"
+        menuAlFinal = "Al final puedes elegir:"
+        menuDISMReparar = "[D] DISM+SFC (reparar)"
+        menuProfunda5 = "[P] Profunda (5-50 GB)"
+        menuDesinstalar = "Desinstalar apps"
+        menuArranque = "Apps arranque"
+        menuMover = "Mover"
+        menuEjecutar = "Ejecutar"
+        menuAtajo = "Atajo"
+        menuOpcion = "Opcion"
+        menuCerrando = "Cerrando en"
+        # Resumen
+        resumen = "RESUMEN"
+        tarea = "TAREA"
+        estado = "ESTADO"
+        liberadoCol = "LIBERADO"
+        total = "TOTAL"
+        tiempoLabel = "Tiempo"
+        liberadoLabel = "Liberado"
+        # Splash
+        splashNala = "NALA  /  Annie  /  Todos  /  ..."
+        splashCargando = "Cargando FREGONATOR..."
         tiempoTotal = "Tiempo total"
         tareas = "tareas"
         tareasCompletadas = "tareas completadas"
@@ -618,6 +668,44 @@ $script:IDIOMAS = @{
         mbLiberados = "{0} MB freed"
         tiempoTranscurrido = "Elapsed time"
         tiempoRestante = "Estimated time remaining"
+        # Header
+        simpleFuncional = "SIMPLE · FUNCTIONAL"
+        clonaDisco = "Clone your DISK with ONE CLICK"
+        optimizaPC = "Optimize your PC with ONE CLICK"
+        unClickOptimizacion = "ONE CLICK - PARALLEL OPTIMIZATION"
+        unClickAvanzada = "ONE CLICK ADVANCED - TOTAL OPTIMIZATION"
+        limpiezaProfunda = "DEEP CLEANUP - Free 5-50 GB"
+        modoAvanzado = "ADVANCED MODE"
+        # MS-DOS Menu
+        menuLimpiezaRapida = "QUICK CLEANUP"
+        menuLimpiezaAvanzada = "FULL CLEANUP"
+        menu8Tareas = "8 parallel tasks"
+        menu13Tareas = "13 tasks + options"
+        menu30Seg = "~30 seconds"
+        menuDISMOpcional = "+ DISM/SFC optional"
+        menuProfunda = "+ Deep cleanup"
+        menuTodoRapida = "All from Quick"
+        menuAlFinal = "At the end choose:"
+        menuDISMReparar = "[D] DISM+SFC (repair)"
+        menuProfunda5 = "[P] Deep (5-50 GB)"
+        menuDesinstalar = "Uninstall apps"
+        menuArranque = "Startup apps"
+        menuMover = "Move"
+        menuEjecutar = "Run"
+        menuAtajo = "Shortcut"
+        menuOpcion = "Option"
+        menuCerrando = "Closing in"
+        # Summary
+        resumen = "SUMMARY"
+        tarea = "TASK"
+        estado = "STATUS"
+        liberadoCol = "FREED"
+        total = "TOTAL"
+        tiempoLabel = "Time"
+        liberadoLabel = "Freed"
+        # Splash
+        splashNala = "NALA  /  Annie  /  All pets  /  ..."
+        splashCargando = "Loading FREGONATOR..."
         tiempoTotal = "Total time"
         tareas = "tasks"
         tareasCompletadas = "tasks completed"
@@ -1174,9 +1262,9 @@ function Show-FregonatorResumen {
     Write-Host $limpiar
     Write-Host $limpiar
     Write-Host "    ┌─────────────────────────────────────────────────────────────────────────┐" -ForegroundColor Cyan
-    Write-Host "                            FREGONATOR - RESUMEN                               " -ForegroundColor Cyan
+    Write-Host "                            FREGONATOR - $(T 'resumen')                               " -ForegroundColor Cyan
     Write-Host "    ├─────────────────────────────────────────────────────────────────────────┤" -ForegroundColor Cyan
-    Write-Host "      TAREA                              ESTADO    LIBERADO                    " -ForegroundColor White
+    Write-Host "      $(T 'tarea')                              $(T 'estado')    $(T 'liberadoCol')                    " -ForegroundColor White
     Write-Host "    ├─────────────────────────────────────────────────────────────────────────┤" -ForegroundColor DarkGray
 
     foreach ($task in $script:TaskResults) {
@@ -1198,8 +1286,8 @@ function Show-FregonatorResumen {
         "$([math]::Round($duracion.TotalSeconds))s"
     }
 
-    $liberadoTxt = if ($totalGB -ge 1) { "Liberado: $totalGB GB" } else { "Liberado: $totalMB MB" }
-    Write-Host "      TOTAL: $tareasOK/$tareasTotal tareas | Tiempo: $durTxt | $liberadoTxt" -ForegroundColor Cyan
+    $liberadoTxt = if ($totalGB -ge 1) { "$(T 'liberadoLabel'): $totalGB GB" } else { "$(T 'liberadoLabel'): $totalMB MB" }
+    Write-Host "      $(T 'total'): $tareasOK/$tareasTotal $(T 'tareas') | $(T 'tiempoLabel'): $durTxt | $liberadoTxt" -ForegroundColor Cyan
     Write-Host "      $fecha" -ForegroundColor DarkGray
     Write-Host "    └─────────────────────────────────────────────────────────────────────────┘" -ForegroundColor Cyan
 }
@@ -1524,9 +1612,9 @@ function Show-Logo {
     Write-Host "    ██╔══╝  ██╔══██╗██╔══╝  ██║   ██║██║   ██║██║╚██╗██║██╔══██║   ██║   ██║   ██║██╔══██╗" -ForegroundColor Cyan
     Write-Host "    ██║     ██║  ██║███████╗╚██████╔╝╚██████╔╝██║ ╚████║██║  ██║   ██║   ╚██████╔╝██║  ██║" -ForegroundColor Cyan
     Write-Host "    ╚═╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan
-    Write-Host "    SIMPLE · FUNCIONAL                                                              ARCAMIA-MEMMEM" -ForegroundColor DarkGray
-    Write-Host "    Clona tu DISCO con UN CLICK                                                www.clonadiscos.com" -ForegroundColor DarkGray
-    Write-Host "    Optimiza tu PC con UN CLICK                                                 www.fregonator.com" -ForegroundColor DarkGray
+    Write-Host "    $(T 'simpleFuncional')                                                              ARCAMIA-MEMMEM" -ForegroundColor DarkGray
+    Write-Host "    $(T 'clonaDisco')                                                www.clonadiscos.com" -ForegroundColor DarkGray
+    Write-Host "    $(T 'optimizaPC')                                                 www.fregonator.com" -ForegroundColor DarkGray
     Write-Host "    " -NoNewline
     Write-Host "COSTA DA MORTE" -NoNewline -ForegroundColor Cyan
     Write-Host " # " -NoNewline -ForegroundColor DarkGray
@@ -2494,7 +2582,7 @@ function Show-ResumenHibrido {
 # =============================================================================
 
 function Start-LimpiezaProfunda {
-    Show-Logo -Subtitulo 'LIMPIEZA PROFUNDA - Liberar 5-50 GB'
+    Show-Logo -Subtitulo (T "limpiezaProfunda")
 
     # Health Check del disco antes de empezar
     Write-Host "    Analizando estado del disco..." -ForegroundColor Gray
@@ -2651,7 +2739,7 @@ function Get-FraseRandom {
 }
 
 function Start-OneClick {
-    Show-Logo -Subtitulo "UN CLICK - OPTIMIZACION PARALELA"
+    Show-Logo -Subtitulo (T "unClickOptimizacion")
     Update-Monitor -Etapa (T "limpiezaRapida") -Progreso 5 -Total 8 -Log (T "iniciandoLimpiezaRapida")
 
     # Capturar espacio libre ANTES
@@ -2975,7 +3063,7 @@ function Start-OneClick {
 # =============================================================================
 
 function Start-OneClickAvanzada {
-    Show-Logo -Subtitulo "UN CLICK AVANZADA - OPTIMIZACION TOTAL"
+    Show-Logo -Subtitulo (T "unClickAvanzada")
     Update-Monitor -Etapa (T "limpiezaCompleta") -Progreso 5 -Total 13 -Log (T "iniciandoLimpiezaAvanzada")
 
     # Capturar espacio libre ANTES
@@ -3446,7 +3534,7 @@ function Start-Avanzado {
             @{ Key = "X"; Label = "Salir"; Description = "" }
         )
 
-        $op = Show-MenuInteractivo -Titulo "OPCIONES AVANZADAS" -Opciones $opcionesAvz -LogoFunction { Show-Logo -Subtitulo "MODO AVANZADO" }
+        $op = Show-MenuInteractivo -Titulo "OPCIONES AVANZADAS" -Opciones $opcionesAvz -LogoFunction { Show-Logo -Subtitulo (T "modoAvanzado") }
 
         switch ($op.ToUpper()) {
             "1" {
@@ -3618,52 +3706,52 @@ function Show-MenuPrincipal {
     Write-Host "    ╔════════════════════════════════════╦════════════════════════════════════╗" -ForegroundColor Cyan
     Write-Host "    ║                                    ║                                    ║" -ForegroundColor Cyan
 
-    # Fila de titulos con seleccion visual (cada celda = 36 chars, linea total = 79 chars)
-    # Texto1 con flechas = 21 chars, Texto2 = 21 chars
+    # Textos traducidos con padding para columnas de 36 chars
+    $t1 = "[1] $(T 'menuLimpiezaRapida')"
+    $t2 = "[2] $(T 'menuLimpiezaAvanzada')"
+
     if ($Selected -eq 1) {
-        # Col1: ►[1] LIMPIEZA RAPIDA◄ (21) + 15 espacios = 36
-        # Col2:  [2] LIMPIEZA AVANZADA (22) + 14 espacios = 36
         Write-Host "    ║" -NoNewline -ForegroundColor Cyan
         Write-Host "$arrow" -NoNewline -ForegroundColor Yellow
-        Write-Host "[1] LIMPIEZA RAPIDA" -NoNewline -ForegroundColor Black -BackgroundColor DarkYellow
+        Write-Host "$t1" -NoNewline -ForegroundColor Black -BackgroundColor DarkYellow
         Write-Host "$arrowL" -NoNewline -ForegroundColor Yellow
-        Write-Host "               ║" -NoNewline -ForegroundColor Cyan
-        Write-Host " [2] LIMPIEZA AVANZADA              ║" -ForegroundColor Gray
+        $pad1 = 36 - $t1.Length - 2
+        Write-Host "$(' ' * $pad1)║" -NoNewline -ForegroundColor Cyan
+        Write-Host " $($t2.PadRight(35))║" -ForegroundColor Gray
     } else {
-        # Col1:  [1] LIMPIEZA RAPIDA (20) + 16 espacios = 36
-        # Col2: ►[2] LIMPIEZA AVANZADA◄ (23) + 13 espacios = 36
-        Write-Host "    ║ [1] LIMPIEZA RAPIDA                ║" -NoNewline -ForegroundColor Gray
+        Write-Host "    ║ $($t1.PadRight(35))║" -NoNewline -ForegroundColor Gray
         Write-Host "$arrow" -NoNewline -ForegroundColor Yellow
-        Write-Host "[2] LIMPIEZA AVANZADA" -NoNewline -ForegroundColor Black -BackgroundColor DarkYellow
+        Write-Host "$t2" -NoNewline -ForegroundColor Black -BackgroundColor DarkYellow
         Write-Host "$arrowL" -NoNewline -ForegroundColor Yellow
-        Write-Host "             ║" -ForegroundColor Cyan
+        $pad2 = 36 - $t2.Length - 2
+        Write-Host "$(' ' * $pad2)║" -ForegroundColor Cyan
     }
 
     Write-Host "    ╟────────────────────────────────────╫────────────────────────────────────╢" -ForegroundColor Cyan
-    Write-Host "    ║      8 tareas en paralelo          ║      13 tareas + opciones          ║" -ForegroundColor Gray
-    Write-Host "    ║      ~30 segundos                  ║      + DISM/SFC opcional           ║" -ForegroundColor Gray
-    Write-Host "    ║                                    ║      + Limpieza profunda           ║" -ForegroundColor Gray
+    Write-Host "    ║$(("      " + (T 'menu8Tareas')).PadRight(36))║$(("      " + (T 'menu13Tareas')).PadRight(36))║" -ForegroundColor Gray
+    Write-Host "    ║$(("      " + (T 'menu30Seg')).PadRight(36))║$(("      " + (T 'menuDISMOpcional')).PadRight(36))║" -ForegroundColor Gray
+    Write-Host "    ║$("".PadRight(36))║$(("      " + (T 'menuProfunda')).PadRight(36))║" -ForegroundColor Gray
     Write-Host "    ╟────────────────────────────────────╫────────────────────────────────────╢" -ForegroundColor Cyan
-    Write-Host "    ║  - Liberar RAM                     ║  - Todo lo de Rapida               ║" -ForegroundColor DarkGray
-    Write-Host "    ║  - Limpiar temporales              ║  - Eliminar bloatware              ║" -ForegroundColor DarkGray
-    Write-Host "    ║  - Vaciar papelera                 ║  - Telemetria OFF                  ║" -ForegroundColor DarkGray
-    Write-Host "    ║  - Cache DNS                       ║  - Registro MRU                    ║" -ForegroundColor DarkGray
-    Write-Host "    ║  - Optimizar discos                ║  - Matar procesos                  ║" -ForegroundColor DarkGray
-    Write-Host "    ║  - Alto rendimiento                ║  - Efectos visuales                ║" -ForegroundColor DarkGray
-    Write-Host "    ║  - Actualizar apps                 ║                                    ║" -ForegroundColor DarkGray
-    Write-Host "    ║  - Windows Update                  ║  Al final puedes elegir:           ║" -ForegroundColor DarkGray
-    Write-Host "    ║                                    ║  [D] DISM+SFC (reparar)            ║" -ForegroundColor DarkGray
-    Write-Host "    ║                                    ║  [P] Profunda (5-50 GB)            ║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'liberarRAM')).PadRight(36))║$(("  - " + (T 'menuTodoRapida')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'limpiarTemp')).PadRight(36))║$(("  - " + (T 'eliminarBloatware')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'vaciarPapelera')).PadRight(36))║$(("  - " + (T 'telemetriaOff')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'cacheDNS')).PadRight(36))║$(("  - " + (T 'registroMRU')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'optimizarDiscos')).PadRight(36))║$(("  - " + (T 'matarProcesos')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'altoRendimiento')).PadRight(36))║$(("  - " + (T 'efectosVisuales')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'actualizarApps')).PadRight(36))║$("".PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$(("  - " + (T 'windowsUpdate')).PadRight(36))║$(("  " + (T 'menuAlFinal')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$("".PadRight(36))║$(("  " + (T 'menuDISMReparar')).PadRight(36))║" -ForegroundColor DarkGray
+    Write-Host "    ║$("".PadRight(36))║$(("  " + (T 'menuProfunda5')).PadRight(36))║" -ForegroundColor DarkGray
     Write-Host "    ╠════════════════════════════════════╩════════════════════════════════════╣" -ForegroundColor Cyan
-    Write-Host "    ║  [A] Desinstalar apps   [S] Apps arranque   [R] Rendimiento  [X] Salir  ║" -ForegroundColor Gray
-    Write-Host "    ║  [D] Drivers            [P] Programar       [H] Historial    [L] Logs   ║" -ForegroundColor DarkGray
+    Write-Host "    ║  [A] $(T 'menuDesinstalar')   [S] $(T 'menuArranque')   [R] $(T 'rendimiento')  [X] $(T 'salir')  ║" -ForegroundColor Gray
+    Write-Host "    ║  [D] $(T 'drivers')            [P] $(T 'programar')       [H] $(T 'historial')    [L] $(T 'logs')   ║" -ForegroundColor DarkGray
     Write-Host "    ╚═════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
     $upArrow = [char]0x2190  # ←
     $downArrow = [char]0x2192  # →
-    Write-Host "    $upArrow$downArrow Mover   ENTER Ejecutar   [1][2][A][S][R][D][P][H][L][X] Atajo" -ForegroundColor DarkCyan
+    Write-Host "    $upArrow$downArrow $(T 'menuMover')   ENTER $(T 'menuEjecutar')   [1][2][A][S][R][D][P][H][L][X] $(T 'menuAtajo')" -ForegroundColor DarkCyan
     Write-Host ""
-    Write-Host "    Opcion: " -NoNewline -ForegroundColor Yellow
+    Write-Host "    $(T 'menuOpcion'): " -NoNewline -ForegroundColor Yellow
 }
 
 # =============================================================================
@@ -3672,7 +3760,7 @@ function Show-MenuPrincipal {
 if ($AutoRapida) {
     Start-OneClick
     Write-Host ""
-    Write-Host "    Cerrando en 3 segundos..." -ForegroundColor DarkGray
+    Write-Host "    $(T 'menuCerrando') 3 $(T 'segundos')..." -ForegroundColor DarkGray
     Start-Sleep -Seconds 3
     exit 0
 }
@@ -3680,7 +3768,7 @@ if ($AutoRapida) {
 if ($AutoAvanzada) {
     Start-OneClickAvanzada
     Write-Host ""
-    Write-Host "    Cerrando en 3 segundos..." -ForegroundColor DarkGray
+    Write-Host "    $(T 'menuCerrando') 3 $(T 'segundos')..." -ForegroundColor DarkGray
     Start-Sleep -Seconds 3
     exit 0
 }

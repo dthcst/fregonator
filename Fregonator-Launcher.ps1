@@ -100,6 +100,14 @@ function Get-Text($key) {
 # SONIDOS - Ladrido de Nala + Swoosh fregona-sable
 # ============================================================================
 $script:SoundEnabled = $true  # Toggle para activar/desactivar sonidos
+
+# Toggle para splash screen (Nala)
+$script:SplashConfigFile = "$env:LOCALAPPDATA\FREGONATOR\splash.txt"
+$script:SplashEnabled = $true
+if (Test-Path $script:SplashConfigFile) {
+    $splashVal = (Get-Content $script:SplashConfigFile -Raw).Trim()
+    $script:SplashEnabled = ($splashVal -ne "off")
+}
 $script:SoundPlayer = $null
 if (Test-Path $script:BarkSound) {
     $script:SoundPlayer = New-Object System.Media.SoundPlayer($script:BarkSound)
@@ -496,6 +504,50 @@ $btnSalir.Add_MouseEnter({
 $btnSalir.Add_MouseLeave({ $this.Tag.Hover = $false; $this.Invalidate() })
 $btnSalir.Add_Click({ $form.Close() })
 $form.Controls.Add($btnSalir)
+
+# ============================================================================
+# ICONO SPLASH ON/OFF (arriba derecha)
+# ============================================================================
+$btnSplash = New-Object System.Windows.Forms.Button
+$btnSplash.FlatStyle = "Flat"
+$btnSplash.FlatAppearance.BorderSize = 0
+$btnSplash.FlatAppearance.MouseOverBackColor = $script:ColBoton
+$btnSplash.BackColor = $script:ColFondo
+$btnSplash.Location = New-Object System.Drawing.Point(390, 15)
+$btnSplash.Size = New-Object System.Drawing.Size(35, 35)
+$btnSplash.Cursor = "Hand"
+
+$btnSplash.Add_Paint({
+    param($sender, $e)
+    $g = $e.Graphics
+    $g.SmoothingMode = "AntiAlias"
+    $color = if ($script:SplashEnabled) { $script:ColCyan } else { $script:ColGris }
+    $brush = New-Object System.Drawing.SolidBrush($color)
+    $pen = New-Object System.Drawing.Pen($color, 2)
+    # Dibujar perro/mascota simplificado
+    $g.FillEllipse($brush, 10, 8, 16, 12)  # Cabeza
+    $g.FillEllipse($brush, 6, 6, 6, 6)     # Oreja izq
+    $g.FillEllipse($brush, 22, 6, 6, 6)    # Oreja der
+    $g.FillEllipse($brush, 8, 20, 18, 10)  # Cuerpo
+    if (-not $script:SplashEnabled) {
+        # X para deshabilitado
+        $penX = New-Object System.Drawing.Pen($script:ColRojo, 2)
+        $g.DrawLine($penX, 5, 5, 30, 30)
+        $g.DrawLine($penX, 30, 5, 5, 30)
+    }
+})
+
+$btnSplash.Add_Click({
+    $script:SplashEnabled = -not $script:SplashEnabled
+    # Guardar preferencia
+    if (-not (Test-Path (Split-Path $script:SplashConfigFile))) {
+        New-Item -Path (Split-Path $script:SplashConfigFile) -ItemType Directory -Force | Out-Null
+    }
+    $val = if ($script:SplashEnabled) { "on" } else { "off" }
+    $val | Out-File $script:SplashConfigFile -Force
+    $this.Invalidate()
+})
+$form.Controls.Add($btnSplash)
 
 # ============================================================================
 # ICONO SOUND ON/OFF (arriba derecha)
