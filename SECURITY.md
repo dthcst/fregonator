@@ -12,7 +12,7 @@
 If you discover a security vulnerability in FREGONATOR, please report it via:
 
 1. **GitHub Issues**: [Open an issue](https://github.com/dthcst/fregonator/issues) with the label `security`
-2. **Email**: Contact via GitHub profile
+2. **Email**: dev@costa-da-morte.com
 
 ### What to include:
 - Description of the vulnerability
