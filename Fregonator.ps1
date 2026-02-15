@@ -1,5 +1,5 @@
 ﻿# =============================================================================
-# FREGONATOR v5.0 - OPTIMIZADOR DE PC
+# FREGONATOR v6.0 - OPTIMIZADOR DE PC
 # El modulo DEFINITIVO: Limpieza Rapida / Avanzada / Profunda
 # 100% nativo Windows - Sin dependencias externas
 # www.fregonator.com | ARCAMIA-MEMMEM
@@ -32,7 +32,7 @@ param(
 # Mostrar ayuda si se solicita
 if ($Help) {
     Write-Host ""
-    Write-Host "  FREGONATOR v5.0 - Optimizador de PC" -ForegroundColor Cyan
+    Write-Host "  FREGONATOR v6.0 - Optimizador de PC" -ForegroundColor Cyan
     Write-Host "  ======================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "  USO:" -ForegroundColor Yellow
@@ -91,58 +91,62 @@ if ($script:ModoGUI) {
     cmd /c "mode con cols=130"
     Start-Sleep -Milliseconds 200
 
-    Add-Type @"
-    using System;
-    using System.Runtime.InteropServices;
-    public class ConsoleWindow {
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr GetConsoleWindow();
-        [DllImport("user32.dll")]
-        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-        [DllImport("user32.dll")]
-        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-        [DllImport("user32.dll")]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-        [DllImport("user32.dll")]
-        public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-        [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+    try {
+        Add-Type @"
+        using System;
+        using System.Runtime.InteropServices;
+        public class ConsoleWindow {
+            [DllImport("kernel32.dll")]
+            public static extern IntPtr GetConsoleWindow();
+            [DllImport("user32.dll")]
+            public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+            [DllImport("user32.dll")]
+            public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+            [DllImport("user32.dll")]
+            public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+            [DllImport("user32.dll")]
+            public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+            [DllImport("user32.dll")]
+            public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT { public int Left, Top, Right, Bottom; }
+            [StructLayout(LayoutKind.Sequential)]
+            public struct RECT { public int Left, Top, Right, Bottom; }
 
-        private const int GWL_EXSTYLE = -20;
-        private const int WS_EX_APPWINDOW = 0x40000;
-        private const int WS_EX_TOOLWINDOW = 0x80;
-        private const uint SWP_NOZORDER = 0x4;
-        private const uint SWP_FRAMECHANGED = 0x20;
+            private const int GWL_EXSTYLE = -20;
+            private const int WS_EX_APPWINDOW = 0x40000;
+            private const int WS_EX_TOOLWINDOW = 0x80;
+            private const uint SWP_NOZORDER = 0x4;
+            private const uint SWP_FRAMECHANGED = 0x20;
 
-        public static void Setup(int screenX, int screenY, int screenWidth, int screenHeight) {
-            IntPtr hwnd = GetConsoleWindow();
+            public static void Setup(int screenX, int screenY, int screenWidth, int screenHeight) {
+                IntPtr hwnd = GetConsoleWindow();
 
-            // Ocultar de barra de tareas
-            int style = GetWindowLong(hwnd, GWL_EXSTYLE);
-            style = (style & ~WS_EX_APPWINDOW) | WS_EX_TOOLWINDOW;
-            SetWindowLong(hwnd, GWL_EXSTYLE, style);
-            SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0, 0x2 | 0x1 | SWP_NOZORDER | SWP_FRAMECHANGED);
+                // Ocultar de barra de tareas
+                int style = GetWindowLong(hwnd, GWL_EXSTYLE);
+                style = (style & ~WS_EX_APPWINDOW) | WS_EX_TOOLWINDOW;
+                SetWindowLong(hwnd, GWL_EXSTYLE, style);
+                SetWindowPos(hwnd, IntPtr.Zero, 0, 0, 0, 0, 0x2 | 0x1 | SWP_NOZORDER | SWP_FRAMECHANGED);
 
-            // Tamaño: 130 cols = ~1040px, altura para contenido
-            int terminalWidth = 1040;
-            int terminalHeight = 720;
+                // Tamaño: 130 cols = ~1040px, altura para contenido
+                int terminalWidth = 1040;
+                int terminalHeight = 720;
 
-            // CENTRAR ambas ventanas juntas en monitor principal
-            int monitorWidth = 480;
-            int gap = 10;
-            int totalWidth = terminalWidth + gap + monitorWidth;
-            int posX = screenX + (screenWidth - totalWidth) / 2;
-            int posY = screenY + (screenHeight - terminalHeight) / 2;
-            MoveWindow(hwnd, posX, posY, terminalWidth, terminalHeight, true);
+                // CENTRAR ambas ventanas juntas en monitor principal
+                int monitorWidth = 480;
+                int gap = 10;
+                int totalWidth = terminalWidth + gap + monitorWidth;
+                int posX = screenX + (screenWidth - totalWidth) / 2;
+                int posY = screenY + (screenHeight - terminalHeight) / 2;
+                MoveWindow(hwnd, posX, posY, terminalWidth, terminalHeight, true);
+            }
         }
-    }
 "@
-    Add-Type -AssemblyName System.Windows.Forms
-    $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
-    [ConsoleWindow]::Setup($screen.X, $screen.Y, $screen.Width, $screen.Height)
+        Add-Type -AssemblyName System.Windows.Forms
+        $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+        [ConsoleWindow]::Setup($screen.X, $screen.Y, $screen.Width, $screen.Height)
+    } catch {
+        # Fallback si Win32 falla (0xc0000142) - consola sin posicionar pero funcional
+    }
 }
 
 # NOTA: Mutex eliminado en v3.1 - causaba bloqueos al volver al menu
@@ -206,11 +210,11 @@ $script:MonitorData = @{
 function Update-Monitor {
     param(
         [string]$Etapa,
-        [int]$Progreso,
+        [int]$Progreso = -1,
         [string]$Archivo,
-        [int]$Archivos,
-        [int]$Total,
-        [double]$EspacioMB,
+        [int]$Archivos = -1,
+        [int]$Total = -1,
+        [double]$EspacioMB = -1,
         [string]$Log,
         [switch]$Terminado
     )
@@ -219,7 +223,7 @@ function Update-Monitor {
     if ($Progreso -ge 0) { $script:MonitorData.Progreso = $Progreso }
     if ($Archivo) { $script:MonitorData.ArchivoActual = $Archivo }
     if ($Archivos -ge 0) { $script:MonitorData.ArchivosProcesados = $Archivos }
-    if ($Total -gt 0) { $script:MonitorData.TotalTareas = $Total }
+    if ($Total -ge 0) { $script:MonitorData.TotalTareas = $Total }
     if ($EspacioMB -ge 0) { $script:MonitorData.EspacioLiberado = $EspacioMB }
     if ($Log) { $script:MonitorData.Log = $Log }
     if ($Terminado) { $script:MonitorData.Terminado = $true }
@@ -241,13 +245,6 @@ Update-Monitor -Etapa "FREGONATOR" -Progreso 0 -Log $_initMsg
 # SPLASH SCREEN - NALA
 # =============================================================================
 function Show-NalaSplash {
-    # Verificar si el splash está deshabilitado
-    $splashConfig = "$env:LOCALAPPDATA\FREGONATOR\splash.txt"
-    if (Test-Path $splashConfig) {
-        $splashEnabled = (Get-Content $splashConfig -Raw).Trim()
-        if ($splashEnabled -eq "off") { return }
-    }
-
     Clear-Host
     $cocoColors = @("DarkYellow","Yellow","Magenta","Red","DarkMagenta","Blue","Cyan","Green")
     $nalaArt = @(
@@ -299,11 +296,9 @@ function Show-NalaSplash {
         Start-Sleep -Milliseconds 25
     }
 
-    # Texto de mascotas traducido
-    $nalaText = T "splashNala"
-    $padding = [int]((80 - $nalaText.Length) / 2)
+    # Texto de mascotas (sin traduccion - splash es visual)
     Write-Host ""
-    Write-Host "$(' ' * $padding)$nalaText" -ForegroundColor DarkCyan
+    Write-Host "                    NALA  /  Annie  /  Todas las mascotas  /  ..." -ForegroundColor DarkCyan
     Write-Host ""
 
     # Woof woof! Ladrido de Nala
@@ -317,9 +312,9 @@ function Show-NalaSplash {
         } catch {}
     }
     Write-Host ""
-    Write-Host "                              $(T 'splashCargando')" -ForegroundColor Cyan
+    Write-Host "                              Cargando FREGONATOR..." -ForegroundColor Cyan
     Write-Host ""
-    Start-Sleep -Milliseconds 1000  # 1 segundo completo
+    Start-Sleep -Milliseconds 1000
 }
 
 # Fondo oscuro - 100% standalone, sin dependencias
@@ -335,7 +330,7 @@ Set-FondoOscuro
 # =============================================================================
 
 $script:CONFIG = @{
-    Version = "v5.0"
+    Version = "v6.0"
     LogPath = "$env:USERPROFILE\Documents\ARCAMIA-MEMMEM\Logs\FREGONATOR"
     HistorialPath = "$env:USERPROFILE\Documents\ARCAMIA-MEMMEM\Logs\FREGONATOR\historial.json"
     Idioma = "es"  # es, gl, en
@@ -344,8 +339,9 @@ $script:CONFIG = @{
         @{ Path = "$env:windir\Temp"; Name = "Temp Windows" }
         @{ Path = "$env:LOCALAPPDATA\Temp"; Name = "Local Temp" }
         @{ Path = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache"; Name = "Cache Chrome" }
+        @{ Path = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Code Cache"; Name = "Code Cache Chrome" }
         @{ Path = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache"; Name = "Cache Edge" }
-        @{ Path = "$env:APPDATA\Mozilla\Firefox\Profiles"; Name = "Cache Firefox" }
+        @{ Path = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Code Cache"; Name = "Code Cache Edge" }
         @{ Path = "$env:windir\SoftwareDistribution\Download"; Name = "Windows Update Cache" }
         @{ Path = "$env:windir\Prefetch"; Name = "Prefetch" }
     )
@@ -480,6 +476,7 @@ $script:IDIOMAS = @{
         total = "TOTAL"
         tiempoLabel = "Tiempo"
         liberadoLabel = "Liberado"
+        completadoEn = "COMPLETADO en {0}s"
         # Splash
         splashNala = "NALA  /  Annie  /  Todos  /  ..."
         splashCargando = "Cargando FREGONATOR..."
@@ -703,6 +700,7 @@ $script:IDIOMAS = @{
         total = "TOTAL"
         tiempoLabel = "Time"
         liberadoLabel = "Freed"
+        completadoEn = "COMPLETED in {0}s"
         # Splash
         splashNala = "NALA  /  Annie  /  All pets  /  ..."
         splashCargando = "Loading FREGONATOR..."
@@ -1478,7 +1476,7 @@ function Export-FregonatorHTML {
         <div class="Copyright">
             <div>$fecha</div>
             <div class="branding">
-                <span class="logo-text">FREGONATOR v5.0 | ARCAMIA-MEMMEM</span>
+                <span class="logo-text">FREGONATOR v6.0 | ARCAMIA-MEMMEM</span>
                 <span>
                     <a href="https://www.fregonator.com">fregonator.com</a> |
                     <a href="https://www.costa-da-morte.com">costa-da-morte.com</a>
@@ -1549,7 +1547,7 @@ function Show-FregonatorSplash {
         "                         _____|  |_____",
         "                        /              \",
         "                       |   FREGONATOR   |",
-        "                       |     v5.0     |",
+        "                       |     v6.0     |",
         "                        \______________/",
         "                         |||||||||||||||",
         "                         |||||||||||||||",
@@ -2121,7 +2119,7 @@ function Stop-UnnecessaryProcesses {
     $procesosACerrar = @(
         'OneDrive',           # Sincronizacion en segundo plano
         'YourPhone',          # Tu telefono
-        'GameBar',            # Barra de juegos
+        # 'GameBar',          # NO TOCAR - Necesario para core parking en CPUs modernos (9950X3D, etc.)
         'GrooveMusic',        # Musica Groove
         'SkypeApp',           # Skype
         'Cortana',            # Cortana
@@ -2150,21 +2148,25 @@ function Stop-UnnecessaryProcesses {
 function Optimize-CPUPerformance {
     <#
     .SYNOPSIS
-        CPU al 100% y desactiva core parking
+        CPU min/max states optimization (core parking LEFT ALONE)
         Fusionado de: Tuning-Total.ps1
+    .NOTES
+        Core parking is REQUIRED for modern CPUs (9950X3D, Ryzen X3D, etc.)
+        DO NOT disable it - breaks CPU scheduling and thermals
     #>
     try {
         $activeScheme = (powercfg /getactivescheme) -replace ".*: (\S+).*", '$1'
 
-        # Procesador al 100%
+        # Procesador min/max al 100% (esto es seguro)
         powercfg /setacvalueindex $activeScheme 54533251-82be-4824-96c1-47b60b740d00 893dee8e-2bef-41e0-89c6-b55d0929964c 100 2>$null
         powercfg /setacvalueindex $activeScheme 54533251-82be-4824-96c1-47b60b740d00 bc5038f7-23e0-4960-96da-33abaf5935ec 100 2>$null
 
-        # Desactivar core parking
-        powercfg /setacvalueindex $activeScheme 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100 2>$null
+        # CORE PARKING - NO TOCAR
+        # Required for 9950X3D, Ryzen X3D, Intel hybrid CPUs, etc.
+        # powercfg /setacvalueindex $activeScheme 54533251-82be-4824-96c1-47b60b740d00 0cc5b647-c1df-4637-891a-dec35c318583 100 2>$null
 
         powercfg /setactive $activeScheme
-        Write-FregonatorLog "CPU optimizada: 100%, core parking OFF"
+        Write-FregonatorLog "CPU optimizada (core parking preserved)"
         return $true
     } catch {
         return $false
@@ -2796,7 +2798,7 @@ function Start-OneClick {
     for ($i = 0; $i -lt $total; $i++) {
         $num = "[$($i+1)/$total]"
         $barVacia = "░" * $anchoBar
-        Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [$barVacia] " -NoNewline -ForegroundColor DarkGray
+        Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [$barVacia] " -NoNewline -ForegroundColor DarkGray
         Write-Host (T "pendiente") -ForegroundColor DarkGray
     }
     Write-Host ""
@@ -2873,7 +2875,7 @@ function Start-OneClick {
                 if ($taskSecs -gt 60) { $timeColor = "DarkYellow" }
                 elseif ($taskSecs -gt 30) { $timeColor = "Yellow" }
 
-                Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [" -NoNewline -ForegroundColor White
+                Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [" -NoNewline -ForegroundColor White
                 Write-Host "$barLlena" -NoNewline -ForegroundColor Cyan
                 Write-Host "$barVacia" -NoNewline -ForegroundColor DarkGray
                 Write-Host "] " -NoNewline -ForegroundColor White
@@ -2891,7 +2893,7 @@ function Start-OneClick {
                 # Tarea recien completada
                 $completados[$i] = $true
                 $barCompleta = "█" * $anchoBar
-                Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [" -NoNewline -ForegroundColor White
+                Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [" -NoNewline -ForegroundColor White
                 Write-Host "$barCompleta" -NoNewline -ForegroundColor Cyan
                 Write-Host "] " -NoNewline -ForegroundColor White
                 Write-Host "OK                      " -ForegroundColor Cyan
@@ -2981,7 +2983,7 @@ function Start-OneClick {
             $num = "[$($i+1)/$total]"
             $barCompleta = "█" * $anchoBar
             Set-CursorPositionSafe -X 0 -Y ($lineaBase + $i)
-            Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [" -NoNewline -ForegroundColor White
+            Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [" -NoNewline -ForegroundColor White
             Write-Host "$barCompleta" -NoNewline -ForegroundColor Cyan
             Write-Host "] " -NoNewline -ForegroundColor White
             Write-Host "OK                      " -ForegroundColor Cyan
@@ -3025,7 +3027,7 @@ function Start-OneClick {
 
     # Notificacion Windows
     $totalMB = [math]::Round($totalBytes / 1MB, 0)
-    Update-Monitor -Etapa (T "completado") -Progreso 100 -EspacioMB $totalMB -Log "$(T 'limpiezaFinalizada'): $((T 'mbLiberados') -f $totalMB)" -Terminado
+    Update-Monitor -Etapa (T "completado") -Progreso 100 -Archivos $total -Total $total -EspacioMB $totalMB -Log "$(T 'limpiezaFinalizada'): $((T 'mbLiberados') -f $totalMB)" -Terminado
 
     # En modo GUI: terminar limpiamente sin menus
     if ($script:ModoGUI) {
@@ -3125,7 +3127,7 @@ function Start-OneClickAvanzada {
             }; "OK"
         }}
         @{ Nombre = (T "matandoProcesos"); Detalle = "OneDrive, Cortana..."; Codigo = {
-            @("OneDrive","GameBar","Cortana","YourPhone","GrooveMusic") | ForEach-Object {
+            @("OneDrive","Cortana","YourPhone","GrooveMusic") | ForEach-Object {
                 Get-Process -Name $_ -EA 0 | Stop-Process -Force -EA 0
             }; "OK"
         }}
@@ -3163,7 +3165,7 @@ function Start-OneClickAvanzada {
     for ($i = 0; $i -lt $total; $i++) {
         $num = "[$($i+1)/$total]".PadRight(7)
         $barVacia = "░" * $anchoBar
-        Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [$barVacia] " -NoNewline -ForegroundColor DarkGray
+        Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [$barVacia] " -NoNewline -ForegroundColor DarkGray
         Write-Host (T "pendiente") -ForegroundColor DarkGray
     }
     Write-Host ""
@@ -3237,7 +3239,7 @@ function Start-OneClickAvanzada {
                 if ($taskSecs -gt 60) { $timeColor = "DarkYellow" }
                 elseif ($taskSecs -gt 30) { $timeColor = "Yellow" }
 
-                Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [" -NoNewline -ForegroundColor White
+                Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [" -NoNewline -ForegroundColor White
                 Write-Host "$barLlena" -NoNewline -ForegroundColor Cyan
                 Write-Host "$barVacia" -NoNewline -ForegroundColor DarkGray
                 Write-Host "] " -NoNewline -ForegroundColor White
@@ -3254,7 +3256,7 @@ function Start-OneClickAvanzada {
             elseif (-not $completados.ContainsKey($i)) {
                 $completados[$i] = $true
                 $barCompleta = "█" * $anchoBar
-                Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [" -NoNewline -ForegroundColor White
+                Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [" -NoNewline -ForegroundColor White
                 Write-Host "$barCompleta" -NoNewline -ForegroundColor Cyan
                 Write-Host "] " -NoNewline -ForegroundColor White
                 Write-Host "OK                      " -ForegroundColor Cyan
@@ -3343,7 +3345,7 @@ function Start-OneClickAvanzada {
             $num = "[$($i+1)/$total]".PadRight(7)
             $barCompleta = "█" * $anchoBar
             Set-CursorPositionSafe -X 0 -Y ($lineaBase + $i)
-            Write-Host "    $num $($tareas[$i].Nombre.PadRight(22)) [" -NoNewline -ForegroundColor White
+            Write-Host "    $num $($tareas[$i].Nombre.PadRight(28)) [" -NoNewline -ForegroundColor White
             Write-Host "$barCompleta" -NoNewline -ForegroundColor Cyan
             Write-Host "] " -NoNewline -ForegroundColor White
             Write-Host "OK                      " -ForegroundColor Cyan
@@ -3478,7 +3480,7 @@ function Start-OneClickAvanzada {
 
     # Notificacion Windows
     $totalMB = [math]::Round($totalBytes / 1MB, 0)
-    Update-Monitor -Etapa (T "completado") -Progreso 100 -EspacioMB $totalMB -Log "$(T 'limpiezaFinalizada'): $((T 'mbLiberados') -f $totalMB)" -Terminado
+    Update-Monitor -Etapa (T "completado") -Progreso 100 -Archivos $total -Total $total -EspacioMB $totalMB -Log "$(T 'limpiezaFinalizada'): $((T 'mbLiberados') -f $totalMB)" -Terminado
 
     # En modo GUI: terminar limpiamente sin menus
     if ($script:ModoGUI) {
@@ -3615,7 +3617,7 @@ function Start-Avanzado {
 
                 Write-Host "    [3/6] Optimizando CPU..." -ForegroundColor White
                 Optimize-CPUPerformance | Out-Null
-                Write-Host "        [OK] CPU al 100%, core parking OFF" -ForegroundColor Cyan
+                Write-Host "        [OK] CPU optimizada" -ForegroundColor Cyan
 
                 Write-Host "    [4/6] Limpiando cache ARP..." -ForegroundColor White
                 Clear-ARPCache | Out-Null
@@ -3727,25 +3729,53 @@ function Show-MenuPrincipal {
         Write-Host "$(' ' * $pad2)║" -ForegroundColor Cyan
     }
 
-    Write-Host "    ╟────────────────────────────────────╫────────────────────────────────────╢" -ForegroundColor Cyan
-    Write-Host "    ║$(("      " + (T 'menu8Tareas')).PadRight(36))║$(("      " + (T 'menu13Tareas')).PadRight(36))║" -ForegroundColor Gray
-    Write-Host "    ║$(("      " + (T 'menu30Seg')).PadRight(36))║$(("      " + (T 'menuDISMOpcional')).PadRight(36))║" -ForegroundColor Gray
-    Write-Host "    ║$("".PadRight(36))║$(("      " + (T 'menuProfunda')).PadRight(36))║" -ForegroundColor Gray
-    Write-Host "    ╟────────────────────────────────────╫────────────────────────────────────╢" -ForegroundColor Cyan
-    Write-Host "    ║$(("  - " + (T 'liberarRAM')).PadRight(36))║$(("  - " + (T 'menuTodoRapida')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$(("  - " + (T 'limpiarTemp')).PadRight(36))║$(("  - " + (T 'eliminarBloatware')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$(("  - " + (T 'vaciarPapelera')).PadRight(36))║$(("  - " + (T 'telemetriaOff')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$(("  - " + (T 'cacheDNS')).PadRight(36))║$(("  - " + (T 'registroMRU')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$(("  - " + (T 'optimizarDiscos')).PadRight(36))║$(("  - " + (T 'matarProcesos')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$(("  - " + (T 'altoRendimiento')).PadRight(36))║$(("  - " + (T 'efectosVisuales')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$(("  - " + (T 'actualizarApps')).PadRight(36))║$("".PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$(("  - " + (T 'windowsUpdate')).PadRight(36))║$(("  " + (T 'menuAlFinal')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$("".PadRight(36))║$(("  " + (T 'menuDISMReparar')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ║$("".PadRight(36))║$(("  " + (T 'menuProfunda5')).PadRight(36))║" -ForegroundColor DarkGray
-    Write-Host "    ╠════════════════════════════════════╩════════════════════════════════════╣" -ForegroundColor Cyan
-    Write-Host "    ║  [A] $(T 'menuDesinstalar')   [S] $(T 'menuArranque')   [R] $(T 'rendimiento')  [X] $(T 'salir')  ║" -ForegroundColor Gray
-    Write-Host "    ║  [D] $(T 'drivers')            [P] $(T 'programar')       [H] $(T 'historial')    [L] $(T 'logs')   ║" -ForegroundColor DarkGray
-    Write-Host "    ╚═════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "    +------------------------------------+------------------------------------+" -ForegroundColor Cyan
+    $c1 = ("      " + (T 'menu8Tareas')).PadRight(36)
+    $c2 = ("      " + (T 'menu13Tareas')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor Gray
+    $c1 = ("      " + (T 'menu30Seg')).PadRight(36)
+    $c2 = ("      " + (T 'menuDISMOpcional')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor Gray
+    $c1 = "".PadRight(36)
+    $c2 = ("      " + (T 'menuProfunda')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor Gray
+    Write-Host "    +------------------------------------+------------------------------------+" -ForegroundColor Cyan
+    $c1 = ("  - " + (T 'liberarRAM')).PadRight(36)
+    $c2 = ("  - " + (T 'menuTodoRapida')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = ("  - " + (T 'limpiarTemp')).PadRight(36)
+    $c2 = ("  - " + (T 'eliminarBloatware')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = ("  - " + (T 'vaciarPapelera')).PadRight(36)
+    $c2 = ("  - " + (T 'telemetriaOff')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = ("  - " + (T 'cacheDNS')).PadRight(36)
+    $c2 = ("  - " + (T 'registroMRU')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = ("  - " + (T 'optimizarDiscos')).PadRight(36)
+    $c2 = ("  - " + (T 'matarProcesos')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = ("  - " + (T 'altoRendimiento')).PadRight(36)
+    $c2 = ("  - " + (T 'efectosVisuales')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = ("  - " + (T 'actualizarApps')).PadRight(36)
+    $c2 = "".PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = ("  - " + (T 'windowsUpdate')).PadRight(36)
+    $c2 = ("  " + (T 'menuAlFinal')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = "".PadRight(36)
+    $c2 = ("  " + (T 'menuDISMReparar')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    $c1 = "".PadRight(36)
+    $c2 = ("  " + (T 'menuProfunda5')).PadRight(36)
+    Write-Host "    |$c1|$c2|" -ForegroundColor DarkGray
+    Write-Host "    +========================================+================================+" -ForegroundColor Cyan
+    $menuLine1 = "  [A] " + (T 'menuDesinstalar') + "   [S] " + (T 'menuArranque') + "   [R] " + (T 'rendimiento') + "  [X] " + (T 'salir')
+    Write-Host "    |$($menuLine1.PadRight(73))|" -ForegroundColor Gray
+    $menuLine2 = "  [D] " + (T 'drivers') + "            [P] " + (T 'programar') + "       [H] " + (T 'historial') + "    [L] " + (T 'logs')
+    Write-Host "    |$($menuLine2.PadRight(73))|" -ForegroundColor DarkGray
+    Write-Host "    +=========================================================================+" -ForegroundColor Cyan
     Write-Host ""
     $upArrow = [char]0x2190  # ←
     $downArrow = [char]0x2192  # →
@@ -3779,7 +3809,7 @@ if ($AutoAvanzada) {
 if ($script:SilentMode) {
     # Modo silencioso: ejecutar y salir
     Write-Host ""
-    Write-Host "  FREGONATOR v5.0 - Modo Silencioso" -ForegroundColor Cyan
+    Write-Host "  FREGONATOR v6.0 - Modo Silencioso" -ForegroundColor Cyan
     Write-Host "  =====================================" -ForegroundColor Cyan
     Write-Host ""
 
@@ -3889,7 +3919,9 @@ if ($script:SilentMode) {
 
     Write-Host ""
     Write-Host "  =====================================" -ForegroundColor Cyan
-    Write-Host "  COMPLETADO en $([math]::Round($duracion.TotalSeconds))s | $totalMB MB liberados" -ForegroundColor Cyan
+    $completadoMsg = (T 'completadoEn') -f [math]::Round($duracion.TotalSeconds)
+    $liberadoMsg = (T 'mbLiberados') -f $totalMB
+    Write-Host "  $completadoMsg | $liberadoMsg" -ForegroundColor Cyan
     Write-Host "  Log: $script:CurrentLogFile" -ForegroundColor DarkGray
     Write-Host "  =====================================" -ForegroundColor Cyan
     Write-Host ""
