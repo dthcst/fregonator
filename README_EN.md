@@ -1,4 +1,4 @@
-# Fregonator v5.0
+# FREGONATOR v6.0
 
 ## PC Optimizer for Windows
 
@@ -14,7 +14,7 @@ FREGONATOR is a free, safe, and transparent PC optimizer. Cleans temp files, fre
 |--------|------------|----------|
 | Price | Free | $30/year |
 | Installer | 2.2 MB | ~50 MB |
-| Portable | 165 KB | N/A |
+| Portable | 220 KB | N/A |
 | Telemetry | None | Yes (Avast) |
 | Code | Open PowerShell | Closed |
 | Execution | Parallel (8-13 tasks) | Sequential |
@@ -23,9 +23,15 @@ FREGONATOR is a free, safe, and transparent PC optimizer. Cleans temp files, fre
 
 ## Installation
 
-### Option 1: Installer (recommended)
+### Option 1: One-liner (recommended)
+```powershell
+irm fregonator.com/install.ps1 | iex
 ```
-Download FREGONATOR-4.0-Setup.exe and run
+Downloads, installs to %LOCALAPPDATA%, creates desktop shortcut. No admin required.
+
+### Option 2: Installer
+```
+Download FREGONATOR-6.0-Setup.exe and run
 ```
 - Professional install wizard
 - Multi-language (English/Spanish)
@@ -33,9 +39,9 @@ Download FREGONATOR-4.0-Setup.exe and run
 - Start Menu entry
 - Uninstaller included
 
-### Option 2: Portable (no install)
+### Option 3: Portable (no install)
 ```
-Extract FREGONATOR-4.0-Setup.zip
+Extract FREGONATOR-6.0-Setup.zip
 Run FREGONATOR.bat
 ```
 
@@ -76,7 +82,7 @@ Double-click FREGONATOR.bat
 
 ### [2] FULL CLEANUP (13 tasks)
 Everything above PLUS:
-- Remove bloatware (CandyCrush, Solitaire, Bing)
+- Remove bloatware (CandyCrush, Solitaire, Bing, Xbox)
 - Disable telemetry
 - Clean MRU registry
 - Kill unnecessary processes
