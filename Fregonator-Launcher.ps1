@@ -15,31 +15,41 @@ $null = [Console.Window]::ShowWindow([Console.Window]::GetConsoleWindow(), 0)
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+# Icono propio en barra de tareas (no el de PowerShell)
+try {
+    $appId = "fregonator.com"
+    $shell32 = Add-Type -MemberDefinition '[DllImport("shell32.dll")] public static extern int SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);' -Name Shell32AppId -Namespace Win32 -PassThru
+    $shell32::SetCurrentProcessExplicitAppUserModelID($appId) | Out-Null
+} catch {}
+
 # ============================================================================
 # SINGLETON - Solo una instancia del Launcher
 # ============================================================================
-$script:FregMutex = New-Object System.Threading.Mutex($false, "Global\FREGONATOR_LAUNCHER_v5")
+# Matazombies: matar cualquier instancia anterior (incluidas ocultas en tray)
+$myPid = $PID
+Get-Process powershell -ErrorAction SilentlyContinue | Where-Object {
+    $_.Id -ne $myPid -and ($_.MainWindowTitle -eq "FREGONATOR" -or $_.MainWindowTitle -eq "")
+} | ForEach-Object {
+    try {
+        $cmdLine = (Get-CimInstance Win32_Process -Filter "ProcessId = $($_.Id)" -ErrorAction SilentlyContinue).CommandLine
+        if ($cmdLine -and $cmdLine -match "Fregonator-Launcher") {
+            $_.Kill()
+        }
+    } catch {}
+}
+Start-Sleep -Milliseconds 300
+$script:FregMutex = New-Object System.Threading.Mutex($false, "Global\FREGONATOR_LAUNCHER_v6")
 if (-not $script:FregMutex.WaitOne(0)) {
-    $resp = [System.Windows.Forms.MessageBox]::Show(
-        "FREGONATOR ya esta abierto.`n`nCerrar la instancia anterior?",
-        "FREGONATOR",
-        [System.Windows.Forms.MessageBoxButtons]::YesNo,
-        [System.Windows.Forms.MessageBoxIcon]::Question
-    )
-    if ($resp -eq "Yes") {
-        # Cerrar instancias anteriores del Launcher
-        $myPid = $PID
-        Get-Process powershell -ErrorAction SilentlyContinue | Where-Object {
-            $_.Id -ne $myPid -and $_.MainWindowTitle -eq "FREGONATOR"
-        } | ForEach-Object { $_.CloseMainWindow(); Start-Sleep -Milliseconds 300; if (-not $_.HasExited) { $_.Kill() } }
-        Start-Sleep -Milliseconds 500
-        # Reintentar mutex
-        $script:FregMutex = New-Object System.Threading.Mutex($false, "Global\FREGONATOR_LAUNCHER_v5")
-        $null = $script:FregMutex.WaitOne(2000)
-    } else {
-        $script:FregMutex.Dispose()
-        exit
+    # Si sigue ocupado, matar todo por fuerza
+    Get-Process powershell -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $myPid } | ForEach-Object {
+        try {
+            $cmdLine = (Get-CimInstance Win32_Process -Filter "ProcessId = $($_.Id)" -ErrorAction SilentlyContinue).CommandLine
+            if ($cmdLine -and $cmdLine -match "Fregonator-Launcher") { $_.Kill() }
+        } catch {}
     }
+    Start-Sleep -Milliseconds 500
+    $script:FregMutex = New-Object System.Threading.Mutex($false, "Global\FREGONATOR_LAUNCHER_v6")
+    $null = $script:FregMutex.WaitOne(2000)
 }
 
 # ============================================================================
@@ -206,6 +216,49 @@ $form.MaximizeBox = $false
 $iconPath = Join-Path $script:ScriptPath "fregonator.ico"
 if (Test-Path $iconPath) { $form.Icon = New-Object System.Drawing.Icon($iconPath) }
 
+# --- SYSTRAY: minimizar a bandeja ---
+$script:TrayIcon = New-Object System.Windows.Forms.NotifyIcon
+$script:TrayIcon.Text = "Fregonator - www.costa-da-morte.com"
+if (Test-Path $iconPath) { $script:TrayIcon.Icon = New-Object System.Drawing.Icon($iconPath) }
+$script:TrayIcon.Visible = $false
+$script:RealClose = $false
+$script:TrayIcon.Add_DoubleClick({
+    $form.Show()
+    $form.WindowState = "Normal"
+    $form.Activate()
+    $script:TrayIcon.Visible = $false
+})
+# Context menu en tray: Abrir / Salir
+$trayMenu = New-Object System.Windows.Forms.ContextMenuStrip
+$trayOpen = $trayMenu.Items.Add("Abrir FREGONATOR")
+$trayOpen.Add_Click({
+    $form.Show()
+    $form.WindowState = "Normal"
+    $form.Activate()
+    $script:TrayIcon.Visible = $false
+})
+$trayExit = $trayMenu.Items.Add("Salir")
+$trayExit.Add_Click({
+    $script:RealClose = $true
+    $script:TrayIcon.Visible = $false
+    $script:TrayIcon.Dispose()
+    $form.Close()
+})
+$script:TrayIcon.ContextMenuStrip = $trayMenu
+# X (cerrar) = mandar al tray en vez de cerrar
+$form.Add_FormClosing({
+    if (-not $script:RealClose) {
+        $_.Cancel = $true
+        $form.WindowState = "Minimized"
+        $form.Hide()
+        $script:TrayIcon.Visible = $true
+        $script:TrayIcon.BalloonTipTitle = "Fregonator"
+        $script:TrayIcon.BalloonTipText = "Minimizado a la bandeja"
+        $script:TrayIcon.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::None
+        $script:TrayIcon.ShowBalloonTip(2000)
+    }
+})
+
 # Centrar manualmente en pantalla
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
 $form.StartPosition = "CenterScreen"
@@ -250,7 +303,8 @@ $pnlHeader.Add_Paint({
 
     # Subtitulo
     $fSub = New-Object System.Drawing.Font("Segoe UI", 9)
-    $g.DrawString("OPTIMIZADOR DE PC", $fSub, (New-Object System.Drawing.SolidBrush($script:ColCyanDim)), ($w / 2), 68, $sf)
+    $subTxt = if ($script:Lang -eq "es") { "OPTIMIZADOR DE PC" } else { "PC OPTIMIZER" }
+    $g.DrawString($subTxt, $fSub, (New-Object System.Drawing.SolidBrush($script:ColCyanDim)), ($w / 2), 68, $sf)
 
 })
 
@@ -894,10 +948,12 @@ $form.Add_Shown({
 })
 
 # ============================================================================
-# MOSTRAR
+# MOSTRAR (Show + Application.Run para soportar systray hide/show)
 # ============================================================================
-[void]$form.ShowDialog()
+[System.Windows.Forms.Application]::Run($form)
 
-# Liberar mutex al cerrar
+# Liberar mutex y tray al cerrar
+$script:TrayIcon.Visible = $false
+$script:TrayIcon.Dispose()
 try { $script:FregMutex.ReleaseMutex() } catch {}
 $script:FregMutex.Dispose()
