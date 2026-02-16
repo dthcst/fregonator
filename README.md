@@ -10,16 +10,27 @@ FREGONATOR es un optimizador de PC gratuito, seguro y transparente. Limpia archi
 
 ---
 
-## Características
+## Por que Fregonator?
+
+CCleaner fue bueno. En 2017 lo hackearon (supply chain attack, 2.27M usuarios afectados). Avast lo compro. Ahora tiene telemetria, popups de upsell y la version gratuita apenas hace nada.
+
+Fregonator hace lo mismo, mejor, gratis y en 220 KB.
 
 | Aspecto | FREGONATOR | CCleaner |
 |---------|------------|----------|
-| Precio | Gratis | 30 EUR/año |
-| Instalador | 2.2 MB | ~50 MB |
-| Portable | 220 KB | N/A |
-| Telemetría | Ninguna | Sí (Avast) |
-| Código | PowerShell visible | Cerrado |
-| Ejecución | Paralela (8-13 tareas) | Secuencial |
+| Precio | Gratis, para siempre | Freemium (30 EUR/ano Pro) |
+| Tamano instalador | 2.2 MB | ~50 MB |
+| Portable | 220 KB | No existe |
+| Telemetria | Ninguna. Zero. Nada | Si (Avast/Gen Digital) |
+| Codigo fuente | PowerShell visible, auditable | Cerrado |
+| Ejecucion | Paralela (8-13 tareas a la vez) | Secuencial |
+| Navegadores | No toca passwords ni sesiones | Borra cookies y sesiones |
+| Historial seguridad | Limpio | Hackeado 2017, v7 rompio PCs |
+| Requiere admin | No | Si (algunas funciones) |
+| Actualizaciones | winget gratis | Solo version Pro |
+| Bloatware | Seguro (preserva Spotify, Netflix) | Agresivo |
+
+**247K+ views en Reddit r/pcmasterrace** - la comunidad ya decidio.
 
 ---
 
