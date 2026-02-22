@@ -4,8 +4,8 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.0.x   | :white_check_mark: |
-| < 5.0   | :x:                |
+| 6.0.x   | :white_check_mark: |
+| < 6.0   | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -45,5 +45,14 @@ You are encouraged to review the code before running:
 # - Fregonator-Launcher.ps1 - GUI launcher
 # - Fregonator-Monitor.ps1 - Progress monitor
 ```
+
+## Code Signing Policy
+
+Free code signing provided by [SignPath.io](https://signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+**Signing team:**
+- Martin Caamano Castineira - Author, Reviewer, Approver
+
+**Privacy:** FREGONATOR does not collect, store, or transfer any user data.
 
 Thank you for helping keep FREGONATOR safe!
