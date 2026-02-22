@@ -46,13 +46,21 @@ You are encouraged to review the code before running:
 # - Fregonator-Monitor.ps1 - Progress monitor
 ```
 
+## Privacy Policy
+
+This program will not transfer any information to other networked systems unless specifically requested by the user.
+
+Specifically:
+- **No telemetry**: Zero data collection, zero tracking, zero analytics
+- **No phone home**: No update checks, no license verification, no usage reports
+- **No third-party SDKs**: No embedded analytics or advertising frameworks
+- **Network activity**: Only `winget upgrade` (Windows native) when explicitly selected by the user from the terminal menu. No other network calls are made.
+
 ## Code Signing Policy
 
 Free code signing provided by [SignPath.io](https://signpath.io), certificate by [SignPath Foundation](https://signpath.org).
 
 **Signing team:**
-- Martin Caamano Castineira - Author, Reviewer, Approver
-
-**Privacy:** FREGONATOR does not collect, store, or transfer any user data.
+- Martin Caamano Castineira ([@dthcst](https://github.com/dthcst)) - Author, Reviewer, Approver
 
 Thank you for helping keep FREGONATOR safe!
