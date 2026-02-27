@@ -4,7 +4,7 @@
 
 FREGONATOR es un optimizador de PC gratuito, seguro y transparente. Limpia archivos temporales, libera RAM, actualiza drivers y elimina bloatware.
 
-**247K+ views en Reddit** | **~2,000 descargas**
+**252K+ views en Reddit** | **~2,000 descargas**
 
 **Descarga:** https://fregonator.com
 
@@ -144,3 +144,4 @@ Desarrollado con Claude Code (Anthropic)
 Costa da Morte - www.costa-da-morte.com
 
 2026 - Software libre y gratuito
+
