@@ -554,6 +554,9 @@ $script:IDIOMAS = @{
     gl = @{
         # Menu principal
         titulo = "FREGONATOR - OPTIMIZADOR DE PC"
+        limpiezaRapida = "LIMPEZA RAPIDA"
+        limpiezaCompleta = "LIMPEZA COMPLETA"
+        menuTerminal = "MENU TERMINAL"
         rapida = "UN CLICK RAPIDA"
         avanzada = "UN CLICK AVANZADA"
         profunda = "PRE-CLONADISCOS"
@@ -563,7 +566,30 @@ $script:IDIOMAS = @{
         idioma = "Idioma"
         programar = "Programar limpeza"
         historial = "Historial"
-        # Tareas
+        opcion = "Opcion"
+        # Menu descricions
+        descRapida = "Temporais, cache, papeleira, RAM (8 tarefas)"
+        descCompleta = "Todo + bloatware, telemetria, optimizacion (13 tarefas)"
+        descTerminal = "Modo avanzado con todas as opcions"
+        tareasParalelas = "tarefas en paralelo"
+        segundos = "segundos"
+        alFinalPuedes = "Ao final podes elixir"
+        reparar = "reparar"
+        # Nomes das tarefas
+        liberarRAM = "Liberar RAM"
+        limpiarTemp = "Limpar temporais"
+        vaciarPapelera = "Baleirar papeleira"
+        cacheDNS = "Cache DNS"
+        optimizarDiscos = "Optimizar discos"
+        altoRendimiento = "Alto rendemento"
+        actualizarApps = "Actualizar apps"
+        windowsUpdate = "Windows Update"
+        eliminarBloatware = "Eliminar bloatware"
+        telemetriaOff = "Telemetria OFF"
+        registroMRU = "Rexistro MRU"
+        matarProcesos = "Matar procesos"
+        efectosVisuales = "Efectos visuais"
+        # Tarefas en progreso
         liberandoRAM = "Liberando RAM"
         limpiandoTemp = "Limpando temporais"
         vaciandoPapelera = "Baleirando papeleira"
@@ -572,27 +598,139 @@ $script:IDIOMAS = @{
         configurandoEnergia = "Configurando enerxia"
         actualizandoApps = "Actualizando apps"
         verificandoUpdates = "Verificando Windows Update"
-        # Mensajes
+        eliminandoBloatware = "Eliminando bloatware"
+        limpiandoRegistro = "Limpando rexistro MRU"
+        matandoProcesos = "Matando procesos"
+        desactivandoTelemetria = "Desactivando telemetria"
+        optimizandoEfectos = "Optimizando efectos"
+        # Estados
+        pendiente = "Pendente"
+        ejecutando = "Executando"
         completado = "Completado"
         error = "Erro"
         advertencia = "Aviso"
+        ok = "OK"
+        abortado = "ABORTADO"
+        # Mensaxes finais
         limpiezaFinalizada = "Limpeza rematada"
         espacioLiberado = "Espazo liberado"
+        # Mensaxes Monitor IPC
+        sistemaIniciado = "Sistema iniciado"
+        iniciandoLimpiezaRapida = "Iniciando limpeza rapida..."
+        iniciandoLimpiezaAvanzada = "Iniciando limpeza avanzada..."
+        tareaDeTotal = "Tarefa {0} de {1}"
+        mbLiberados = "{0} MB liberados"
+        tiempoTranscurrido = "Tempo transcorrido"
+        tiempoRestante = "Tempo restante aproximado"
+        # Header
+        simpleFuncional = "SIMPLE · FUNCIONAL"
+        clonaDisco = "Clona o teu DISCO cun CLICK"
+        optimizaPC = "Optimiza o teu PC cun CLICK"
+        unClickOptimizacion = "UN CLICK - OPTIMIZACION PARALELA"
+        unClickAvanzada = "UN CLICK AVANZADA - OPTIMIZACION TOTAL"
+        limpiezaProfunda = "LIMPEZA PROFUNDA - Liberar 5-50 GB"
+        modoAvanzado = "MODO AVANZADO"
+        # Menu MS-DOS
+        menuLimpiezaRapida = "LIMPEZA RAPIDA"
+        menuLimpiezaAvanzada = "LIMPEZA AVANZADA"
+        menu8Tareas = "8 tarefas en paralelo"
+        menu13Tareas = "13 tarefas + opcions"
+        menu30Seg = "~30 segundos"
+        menuDISMOpcional = "+ DISM/SFC opcional"
+        menuProfunda = "+ Limpeza profunda"
+        menuTodoRapida = "Todo o da Rapida"
+        menuAlFinal = "Ao final podes elixir:"
+        menuDISMReparar = "[D] DISM+SFC (reparar)"
+        menuProfunda5 = "[P] Profunda (5-50 GB)"
+        menuDesinstalar = "Desinstalar apps"
+        menuArranque = "Apps arranque"
+        menuMover = "Mover"
+        menuEjecutar = "Executar"
+        menuAtajo = "Atallo"
+        menuOpcion = "Opcion"
+        menuCerrando = "Pechando en"
+        # Resumo
+        resumen = "RESUMO"
+        tarea = "TAREFA"
+        estado = "ESTADO"
+        liberadoCol = "LIBERADO"
+        total = "TOTAL"
+        tiempoLabel = "Tempo"
+        liberadoLabel = "Liberado"
+        completadoEn = "COMPLETADO en {0}s"
+        # Splash
+        splashNala = "NALA  /  Annie  /  Todos  /  ..."
+        splashCargando = "Cargando FREGONATOR..."
         tiempoTotal = "Tempo total"
         tareas = "tarefas"
+        tareasCompletadas = "tarefas completadas"
+        presionaParaVolver = "Preme calquera tecla para volver"
+        cerrandoEn = "Pechando en"
+        # Barras paralelas
+        ejecucionParalela = "EXECUCION PARALELA"
+        tareasBasicasAvanzadas = "tarefas (basicas + avanzadas)"
+        abortar = "Abortar"
+        abortadoPorUsuario = "ABORTADO polo usuario"
+        global = "GLOBAL"
+        # Avisos
+        notaPCsDesactualizados = "En PCs desactualizados, winget e Windows Update poden tardar varios minutos. Isto e NORMAL."
+        pulsaESC = "Preme [ESC] en calquera momento para abortar"
+        creandoPuntoRestauracion = "Creando punto de restauracion (por seguridade)"
+        puntoCreado = "Punto de restauracion creado"
+        puntoExiste = "Xa existe un punto recente (continua)"
+        # Winget
         wingetNoInstalado = "winget non esta instalado"
         instalandoWinget = "Instalando winget..."
+        # Programar
         programarTitulo = "PROGRAMAR LIMPEZA AUTOMATICA"
         programarDescripcion = "Executar FREGONATOR cada noite as"
         programarCreada = "Tarefa programada creada"
         programarEliminada = "Tarefa programada eliminada"
+        otraHora = "Outra hora (escribir)"
+        eliminarTarea = "Eliminar tarefa programada"
+        formatoInvalido = "Formato invalido. Usa HH:MM (ex: 06:30)"
+        introduceHora = "Introduce hora (HH:MM)"
+        noHabiaTarea = "Non habia tarefa programada"
+        # Historial
         historialTitulo = "HISTORIAL DE LIMPEZAS"
         historialVacio = "Non hai limpezas anteriores"
+        fecha = "DATA"
+        modo = "MODO"
+        mb = "MB"
+        tiempo = "TEMPO"
+        # Notificacion
         notificacionTitulo = "FREGONATOR"
         notificacionListo = "Limpeza completada"
+        # Comparativa
         comparativaAntes = "Antes"
         comparativaDespues = "Despois"
         comparativaAhorro = "Aforro"
+        # Menu inferior
+        desinstalarApps = "Desinstalar apps"
+        appsArranque = "Apps arranque"
+        logs = "Logs"
+        drivers = "Drivers"
+        noHayLogs = "Non hai logs todavia"
+        mover = "Mover"
+        ejecutar = "Executar"
+        atajo = "Atallo"
+        # Driver Updater
+        driverTitulo = "ACTUALIZADOR DE DRIVERS"
+        driverAnalizando = "Analizando drivers instalados..."
+        driverDispositivo = "DISPOSITIVO"
+        driverFecha = "DATA"
+        driverFabricante = "FABRICANTE"
+        driverAntiguo = "Amarelo = Driver antigo (>2 anos)"
+        driverMostrando = "Mostrando 15 mais recentes"
+        driverBuscar = "Buscar actualizacions (Windows Update)"
+        driverAdministrador = "Abrir Administrador de dispositivos"
+        driverWindowsUpdate = "Abrir Windows Update"
+        driverBuscando = "Buscando actualizacions de drivers..."
+        driverEspera = "Isto pode tardar uns minutos..."
+        driverOK = "Busca iniciada. Os drivers instalaranse automaticamente."
+        driverAbriendo = "Abrindo Windows Update para ver o progreso..."
+        volverAlMenu = "Volver ao menu"
+        enterParaVolver = "ENTER para volver"
     }
     en = @{
         # Main menu
@@ -797,7 +935,7 @@ function Get-SystemLanguage {
     $configFile = "$env:LOCALAPPDATA\FREGONATOR\lang.txt"
     if (Test-Path $configFile) {
         $saved = (Get-Content $configFile -Raw).Trim()
-        if ($saved -eq "en" -or $saved -eq "es") { return $saved }
+        if ($saved -eq "en" -or $saved -eq "es" -or $saved -eq "gl") { return $saved }
     }
 
     # Usar UICulture (idioma de interfaz) en lugar de Culture (formato regional)
@@ -809,7 +947,7 @@ function Get-SystemLanguage {
         switch -Wildcard ($lang) {
             "en*" { return "en" }
             "es*" { return "es" }
-            "gl*" { return "es" }  # Gallego -> Español
+            "gl*" { return "gl" }
         }
     }
 
@@ -4016,6 +4154,7 @@ while ($true) {
             Write-Host "    ╠═══════════════════════════════════════════════════════════════════╣" -ForegroundColor Cyan
             Write-Host "    ║  [1] Español                                                      ║" -ForegroundColor White
             Write-Host "    ║  [2] English                                                      ║" -ForegroundColor White
+            Write-Host "    ║  [3] Galego                                                       ║" -ForegroundColor White
             Write-Host "    ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
             Write-Host ""
             Write-Host "    Option / Opcion: " -NoNewline -ForegroundColor Yellow
@@ -4023,6 +4162,7 @@ while ($true) {
             switch ($idiomaOp) {
                 "1" { $script:CONFIG.Idioma = "es"; Write-Host "    Idioma: Español" -ForegroundColor Green }
                 "2" { $script:CONFIG.Idioma = "en"; Write-Host "    Language: English" -ForegroundColor Green }
+                "3" { $script:CONFIG.Idioma = "gl"; Write-Host "    Idioma: Galego" -ForegroundColor Green }
             }
             Start-Sleep 1
             $needRedraw = $true

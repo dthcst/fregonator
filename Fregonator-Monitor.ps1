@@ -41,10 +41,11 @@ function Get-SystemLanguage {
     $configFile = "$env:LOCALAPPDATA\FREGONATOR\lang.txt"
     if (Test-Path $configFile) {
         $saved = (Get-Content $configFile -Raw).Trim()
-        if ($saved -eq "en" -or $saved -eq "es") { return $saved }
+        if ($saved -eq "en" -or $saved -eq "es" -or $saved -eq "gl") { return $saved }
     }
     $uiCulture = (Get-UICulture).Name
     if ($uiCulture -like "en*") { return "en" }
+    if ($uiCulture -like "gl*") { return "gl" }
     return "es"
 }
 $script:Lang = Get-SystemLanguage
@@ -86,8 +87,31 @@ $script:Texts = @{
         abortando = "ABORTING..."
         monitorIniciado = "Monitor started - Waiting for data..."
     }
+    gl = @{
+        tareas = "TAREFAS"
+        liberado = "LIBERADO"
+        velocidad = "VELOCIDADE"
+        procesando = "PROCESANDO:"
+        abortar = "ABORTAR"
+        volver = "[V] VOLVER AO MENU"
+        salir = "[X] SAIR"
+        completado = "LIMPEZA COMPLETADA!"
+        tareasFinalizadas = "Todas as tarefas finalizadas"
+        liberadosEn = "liberados en"
+        completadoMsg = "COMPLETADO:"
+        iniciando = "> INICIANDO..."
+        esperando = "Agardando inicio..."
+        actividad = "ACTIVIDADE:"
+        abortando = "ABORTANDO..."
+        monitorIniciado = "Monitor iniciado - Agardando datos..."
+    }
 }
-function Get-Text($key) { $script:Texts[$script:Lang][$key] }
+function Get-Text($key) {
+    if ($script:Texts[$script:Lang] -and $script:Texts[$script:Lang][$key]) {
+        return $script:Texts[$script:Lang][$key]
+    }
+    return $script:Texts["en"][$key]
+}
 
 # Cargar fuente Citaro
 $script:privateFonts = New-Object System.Drawing.Text.PrivateFontCollection

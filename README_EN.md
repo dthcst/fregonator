@@ -28,7 +28,7 @@ Fregonator does the same job, better, free, in 220 KB.
 | Updates | winget, free | Pro only |
 | Bloatware removal | Safe (keeps Spotify, Netflix) | Aggressive |
 
-**247K+ views on Reddit r/pcmasterrace** - the community already decided.
+**250K+ views on Reddit r/pcmasterrace** - the community already decided.
 
 ---
 
@@ -45,7 +45,7 @@ Downloads, installs to %LOCALAPPDATA%, creates desktop shortcut. No admin requir
 Download FREGONATOR-6.0-Setup.exe and run
 ```
 - Professional install wizard
-- Multi-language (English/Spanish)
+- Multi-language (English/Spanish/Galician)
 - Desktop shortcut
 - Start Menu entry
 - Uninstaller included
@@ -131,8 +131,8 @@ Additional options:
 
 ## Language
 
-The app auto-detects your system language (English/Spanish).
-To manually switch: press **[I]** in the terminal menu.
+The app auto-detects your system language (English/Spanish/Galician).
+To manually switch: press **[I]** in the terminal menu or use the language selector in the GUI.
 
 ---
 

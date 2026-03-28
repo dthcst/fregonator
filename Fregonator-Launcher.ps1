@@ -71,7 +71,7 @@ function Get-SystemLanguage {
     $configFile = "$env:LOCALAPPDATA\FREGONATOR\lang.txt"
     if (Test-Path $configFile) {
         $saved = (Get-Content $configFile -Raw).Trim()
-        if ($saved -eq "en" -or $saved -eq "es") { return $saved }
+        if ($saved -eq "en" -or $saved -eq "es" -or $saved -eq "gl") { return $saved }
     }
 
     # Auto-detectar del sistema
@@ -79,8 +79,8 @@ function Get-SystemLanguage {
     $culture = (Get-Culture).Name
     foreach ($lang in @($uiCulture, $culture)) {
         if ($lang -like "en*") { return "en" }
+        if ($lang -like "gl*") { return "gl" }
         if ($lang -like "es*") { return "es" }
-        if ($lang -like "gl*") { return "es" }
     }
     return "en"  # Default internacional
 }
@@ -105,6 +105,26 @@ $script:Texts = @{
         cancelar = "CANCELAR"
         infoLimpieza = "La limpieza se ejecutara en segundo plano`nusando el modo silencioso (sin ventanas)."
         version = "v6.0"
+        minimizadoBandeja = "Minimizado a la bandeja"
+        abrirFregonator = "Abrir FREGONATOR"
+        optimizadorPC = "OPTIMIZADOR DE PC"
+        estado = "Estado"
+        hora = "Hora:"
+        recomendado = "recomendado"
+        desactivar = "DESACTIVAR"
+        cerrar = "CERRAR"
+        tareaProgramadaCreada = "Tarea programada creada correctamente."
+        frecuenciaLabel = "Frecuencia"
+        horaLabel = "Hora"
+        errorAdmin = "Error: Ejecuta FREGONATOR como Administrador."
+        tareaProgramadaEliminada = "Tarea programada eliminada."
+        noTareaProgramada = "No hay tarea programada activa."
+        activo = "ACTIVO"
+        noConfigurado = "NO CONFIGURADO"
+        proxima = "Proxima"
+        programarLimpieza = "PROGRAMAR LIMPIEZA"
+        diariaRecomendado = "Diaria (recomendado)"
+        alIniciarSesion = "Al iniciar sesion"
     }
     en = @{
         limpiezaRapida = "QUICK CLEANUP"
@@ -123,6 +143,64 @@ $script:Texts = @{
         cancelar = "CANCEL"
         infoLimpieza = "Cleanup will run in the background`nusing silent mode (no windows)."
         version = "v6.0"
+        minimizadoBandeja = "Minimized to tray"
+        abrirFregonator = "Open FREGONATOR"
+        optimizadorPC = "PC OPTIMIZER"
+        estado = "Status"
+        hora = "Time:"
+        recomendado = "recommended"
+        desactivar = "DEACTIVATE"
+        cerrar = "CLOSE"
+        tareaProgramadaCreada = "Scheduled task created successfully."
+        frecuenciaLabel = "Frequency"
+        horaLabel = "Time"
+        errorAdmin = "Error: Run FREGONATOR as Administrator."
+        tareaProgramadaEliminada = "Scheduled task removed."
+        noTareaProgramada = "No active scheduled task."
+        activo = "ACTIVE"
+        noConfigurado = "NOT CONFIGURED"
+        proxima = "Next"
+        programarLimpieza = "SCHEDULE CLEANUP"
+        diariaRecomendado = "Daily (recommended)"
+        alIniciarSesion = "On login"
+    }
+    gl = @{
+        limpiezaRapida = "LIMPEZA RAPIDA"
+        limpiezaCompleta = "LIMPEZA COMPLETA"
+        terminal = "TERMINAL MS-DOS"
+        salir = "SAIR"
+        descRapida = "Temporais, cache, papeleira, RAM (8 tarefas)"
+        descCompleta = "Todo + bloatware, telemetría, optimización (13 tarefas)"
+        descTerminal = "Interface clásica con todas as opcións"
+        programar = "PROGRAMAR LIMPEZA"
+        frecuencia = "Frecuencia:"
+        diaria = "Diaria (medianoite)"
+        semanal = "Semanal (domingos)"
+        inicioSesion = "Ao iniciar sesión"
+        activar = "ACTIVAR"
+        cancelar = "CANCELAR"
+        infoLimpieza = "A limpeza executarase en segundo plano`nusando o modo silencioso (sen ventás)."
+        version = "v6.0"
+        minimizadoBandeja = "Minimizado á bandexa"
+        abrirFregonator = "Abrir FREGONATOR"
+        optimizadorPC = "OPTIMIZADOR DE PC"
+        estado = "Estado"
+        hora = "Hora:"
+        recomendado = "recomendado"
+        desactivar = "DESACTIVAR"
+        cerrar = "PECHAR"
+        tareaProgramadaCreada = "Tarefa programada creada correctamente."
+        frecuenciaLabel = "Frecuencia"
+        horaLabel = "Hora"
+        errorAdmin = "Erro: Executa FREGONATOR como Administrador."
+        tareaProgramadaEliminada = "Tarefa programada eliminada."
+        noTareaProgramada = "Non hai tarefa programada activa."
+        activo = "ACTIVO"
+        noConfigurado = "NON CONFIGURADO"
+        proxima = "Próxima"
+        programarLimpieza = "PROGRAMAR LIMPEZA"
+        diariaRecomendado = "Diaria (recomendado)"
+        alIniciarSesion = "Ao iniciar sesión"
     }
 }
 
@@ -230,14 +308,14 @@ $script:TrayIcon.Add_DoubleClick({
 })
 # Context menu en tray: Abrir / Salir
 $trayMenu = New-Object System.Windows.Forms.ContextMenuStrip
-$trayOpen = $trayMenu.Items.Add("Abrir FREGONATOR")
+$trayOpen = $trayMenu.Items.Add((Get-Text "abrirFregonator"))
 $trayOpen.Add_Click({
     $form.Show()
     $form.WindowState = "Normal"
     $form.Activate()
     $script:TrayIcon.Visible = $false
 })
-$trayExit = $trayMenu.Items.Add("Salir")
+$trayExit = $trayMenu.Items.Add((Get-Text "salir"))
 $trayExit.Add_Click({
     $script:RealClose = $true
     $script:TrayIcon.Visible = $false
@@ -253,7 +331,7 @@ $form.Add_FormClosing({
         $form.Hide()
         $script:TrayIcon.Visible = $true
         $script:TrayIcon.BalloonTipTitle = "Fregonator"
-        $script:TrayIcon.BalloonTipText = "Minimizado a la bandeja"
+        $script:TrayIcon.BalloonTipText = (Get-Text "minimizadoBandeja")
         $script:TrayIcon.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::None
         $script:TrayIcon.ShowBalloonTip(2000)
     }
@@ -303,7 +381,7 @@ $pnlHeader.Add_Paint({
 
     # Subtitulo
     $fSub = New-Object System.Drawing.Font("Segoe UI", 9)
-    $subTxt = if ($script:Lang -eq "es") { "OPTIMIZADOR DE PC" } else { "PC OPTIMIZER" }
+    $subTxt = switch ($script:Lang) { "es" { "OPTIMIZADOR DE PC" }; "gl" { "OPTIMIZADOR DE PC" }; default { "PC OPTIMIZER" } }
     $g.DrawString($subTxt, $fSub, (New-Object System.Drawing.SolidBrush($script:ColCyanDim)), ($w / 2), 68, $sf)
 
 })
@@ -340,6 +418,13 @@ $btnLangH.Add_Paint({
         $g.FillRectangle($rBrush, $fx, $fy, $fw, $band)
         $g.FillRectangle($yBrush, $fx, ($fy + $band), $fw, ($fh - 2 * $band))
         $g.FillRectangle($rBrush, $fx, ($fy + $fh - $band), $fw, $band)
+    } elseif ($script:Lang -eq "gl") {
+        # Galicia: blanco con banda diagonal azul
+        $wBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb($a, 255, 255, 255))
+        $bBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb($a, 0, 119, 187))
+        $g.FillRectangle($wBrush, $fx, $fy, $fw, $fh)
+        $bPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb($a, 0, 119, 187), [math]::Max(2, [int]($fh * 0.25)))
+        $g.DrawLine($bPen, $fx, ($fy + $fh), ($fx + $fw), $fy)
     } else {
         # Inglaterra: Cruz de San Jorge (blanco + cruz roja)
         $wBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb($a, 255, 255, 255))
@@ -593,8 +678,8 @@ function Show-SchedulerDialog {
     $existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
     $statusText = if ($existingTask) {
         $nextRun = (Get-ScheduledTaskInfo -TaskName $taskName -ErrorAction SilentlyContinue).NextRunTime
-        if ($nextRun) { "ACTIVO - Proxima: $($nextRun.ToString('dd/MM HH:mm'))" } else { "ACTIVO" }
-    } else { "NO CONFIGURADO" }
+        if ($nextRun) { "$(Get-Text 'activo') - $(Get-Text 'proxima'): $($nextRun.ToString('dd/MM HH:mm'))" } else { Get-Text "activo" }
+    } else { Get-Text "noConfigurado" }
 
     # Crear dialogo
     $dlg = New-Object System.Windows.Forms.Form
@@ -608,7 +693,7 @@ function Show-SchedulerDialog {
 
     # Titulo
     $lblTitulo = New-Object System.Windows.Forms.Label
-    $lblTitulo.Text = "PROGRAMAR LIMPIEZA"
+    $lblTitulo.Text = Get-Text "programarLimpieza"
     $lblTitulo.Font = New-Object System.Drawing.Font($script:citaroFamily, 16)
     $lblTitulo.ForeColor = $script:ColCyan
     $lblTitulo.Location = New-Object System.Drawing.Point(30, 20)
@@ -617,7 +702,7 @@ function Show-SchedulerDialog {
 
     # Estado actual
     $lblStatus = New-Object System.Windows.Forms.Label
-    $lblStatus.Text = "Estado: $statusText"
+    $lblStatus.Text = "$(Get-Text 'estado'): $statusText"
     $lblStatus.Font = New-Object System.Drawing.Font("Segoe UI", 10)
     $lblStatus.ForeColor = if ($existingTask) { $script:ColVerde } else { [System.Drawing.Color]::Gray }
     $lblStatus.Location = New-Object System.Drawing.Point(30, 55)
@@ -626,7 +711,7 @@ function Show-SchedulerDialog {
 
     # Frecuencia
     $lblFreq = New-Object System.Windows.Forms.Label
-    $lblFreq.Text = "Frecuencia:"
+    $lblFreq.Text = Get-Text "frecuencia"
     $lblFreq.Font = New-Object System.Drawing.Font("Segoe UI", 10)
     $lblFreq.ForeColor = $script:ColCyanDark
     $lblFreq.Location = New-Object System.Drawing.Point(30, 95)
@@ -634,7 +719,7 @@ function Show-SchedulerDialog {
     $dlg.Controls.Add($lblFreq)
 
     $cmbFreq = New-Object System.Windows.Forms.ComboBox
-    $cmbFreq.Items.AddRange(@("Diaria (recomendado)", "Semanal", "Al iniciar sesion"))
+    $cmbFreq.Items.AddRange(@((Get-Text "diariaRecomendado"), (Get-Text "semanal"), (Get-Text "alIniciarSesion")))
     $cmbFreq.SelectedIndex = 0
     $cmbFreq.Location = New-Object System.Drawing.Point(130, 92)
     $cmbFreq.Size = New-Object System.Drawing.Size(220, 25)
@@ -645,7 +730,7 @@ function Show-SchedulerDialog {
 
     # Hora
     $lblHora = New-Object System.Windows.Forms.Label
-    $lblHora.Text = "Hora:"
+    $lblHora.Text = Get-Text "hora"
     $lblHora.Font = New-Object System.Drawing.Font("Segoe UI", 10)
     $lblHora.ForeColor = $script:ColCyanDark
     $lblHora.Location = New-Object System.Drawing.Point(30, 135)
@@ -653,7 +738,7 @@ function Show-SchedulerDialog {
     $dlg.Controls.Add($lblHora)
 
     $cmbHora = New-Object System.Windows.Forms.ComboBox
-    $cmbHora.Items.AddRange(@("03:00 (recomendado)", "04:00", "05:00", "06:00", "12:00", "22:00", "23:00"))
+    $cmbHora.Items.AddRange(@("03:00 ($(Get-Text 'recomendado'))", "04:00", "05:00", "06:00", "12:00", "22:00", "23:00"))
     $cmbHora.SelectedIndex = 0
     $cmbHora.Location = New-Object System.Drawing.Point(130, 132)
     $cmbHora.Size = New-Object System.Drawing.Size(220, 25)
@@ -664,7 +749,7 @@ function Show-SchedulerDialog {
 
     # Info
     $lblInfo = New-Object System.Windows.Forms.Label
-    $lblInfo.Text = "La limpieza se ejecutara en segundo plano`nusando el modo silencioso (sin ventanas)."
+    $lblInfo.Text = Get-Text "infoLimpieza"
     $lblInfo.Font = New-Object System.Drawing.Font("Segoe UI", 9)
     $lblInfo.ForeColor = [System.Drawing.Color]::Gray
     $lblInfo.Location = New-Object System.Drawing.Point(30, 175)
@@ -673,7 +758,7 @@ function Show-SchedulerDialog {
 
     # Boton ACTIVAR
     $btnActivar = New-Object System.Windows.Forms.Button
-    $btnActivar.Text = "ACTIVAR"
+    $btnActivar.Text = Get-Text "activar"
     $btnActivar.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
     $btnActivar.Location = New-Object System.Drawing.Point(30, 230)
     $btnActivar.Size = New-Object System.Drawing.Size(320, 40)
@@ -704,17 +789,17 @@ function Show-SchedulerDialog {
 
             Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force -ErrorAction Stop | Out-Null
 
-            [System.Windows.Forms.MessageBox]::Show("Tarea programada creada correctamente.`n`nFrecuencia: $($cmbFreq.SelectedItem)`nHora: $hora", "FREGONATOR", "OK", "Information")
+            [System.Windows.Forms.MessageBox]::Show("$(Get-Text 'tareaProgramadaCreada')`n`n$(Get-Text 'frecuenciaLabel'): $($cmbFreq.SelectedItem)`n$(Get-Text 'horaLabel'): $hora", "FREGONATOR", "OK", "Information")
             $dlg.Close()
         } catch {
-            [System.Windows.Forms.MessageBox]::Show("Error: Ejecuta FREGONATOR como Administrador.`n`n$_", "Error", "OK", "Error")
+            [System.Windows.Forms.MessageBox]::Show("$(Get-Text 'errorAdmin')`n`n$_", "Error", "OK", "Error")
         }
     })
     $dlg.Controls.Add($btnActivar)
 
     # Boton DESACTIVAR
     $btnDesactivar = New-Object System.Windows.Forms.Button
-    $btnDesactivar.Text = "DESACTIVAR"
+    $btnDesactivar.Text = Get-Text "desactivar"
     $btnDesactivar.Font = New-Object System.Drawing.Font("Segoe UI", 10)
     $btnDesactivar.Location = New-Object System.Drawing.Point(30, 280)
     $btnDesactivar.Size = New-Object System.Drawing.Size(155, 35)
@@ -727,17 +812,17 @@ function Show-SchedulerDialog {
     $btnDesactivar.Add_Click({
         try {
             Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
-            [System.Windows.Forms.MessageBox]::Show("Tarea programada eliminada.", "FREGONATOR", "OK", "Information")
+            [System.Windows.Forms.MessageBox]::Show((Get-Text "tareaProgramadaEliminada"), "FREGONATOR", "OK", "Information")
             $dlg.Close()
         } catch {
-            [System.Windows.Forms.MessageBox]::Show("No hay tarea programada activa.", "FREGONATOR", "OK", "Warning")
+            [System.Windows.Forms.MessageBox]::Show((Get-Text "noTareaProgramada"), "FREGONATOR", "OK", "Warning")
         }
     })
     $dlg.Controls.Add($btnDesactivar)
 
     # Boton CERRAR
     $btnCerrar = New-Object System.Windows.Forms.Button
-    $btnCerrar.Text = "CERRAR"
+    $btnCerrar.Text = Get-Text "cerrar"
     $btnCerrar.Font = New-Object System.Drawing.Font("Segoe UI", 10)
     $btnCerrar.Location = New-Object System.Drawing.Point(195, 280)
     $btnCerrar.Size = New-Object System.Drawing.Size(155, 35)
@@ -799,8 +884,8 @@ $form.Controls.Add($btnSalir)
 # EVENTO CLICK IDIOMA (referencia a $btnLangH dentro del header)
 # ============================================================================
 $btnLangH.Add_Click({
-    # Toggle idioma
-    $script:Lang = if ($script:Lang -eq "es") { "en" } else { "es" }
+    # Toggle idioma (es -> gl -> en -> es)
+    $script:Lang = switch ($script:Lang) { "es" { "gl" }; "gl" { "en" }; default { "es" } }
     $this.Invalidate()  # Redibujar bandera + texto
 
     # Guardar preferencia
