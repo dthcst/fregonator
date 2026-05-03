@@ -1,10 +1,42 @@
+[![GitHub Stars](https://img.shields.io/github/stars/dthcst/fregonator?style=flat-square&color=00E8FF)](https://github.com/dthcst/fregonator/stargazers)
+[![License](https://img.shields.io/github/license/dthcst/fregonator?style=flat-square&color=FFB400)](https://github.com/dthcst/fregonator/blob/main/LICENSE)
+[![GitHub Downloads](https://img.shields.io/github/downloads/dthcst/fregonator/total?style=flat-square&color=FF1AE5)](https://github.com/dthcst/fregonator/releases)
+[![winget](https://img.shields.io/badge/winget-DTHCST.Fregonator-00E8FF?style=flat-square)](https://github.com/microsoft/winget-pkgs/tree/master/manifests/d/DTHCST/Fregonator)
+[![Softonic](https://img.shields.io/badge/Softonic-17%2B%20TLDs-FF1AE5?style=flat-square)](https://fregonator.softonic.com/descargar)
+[![AlternativeTo](https://img.shields.io/badge/AlternativeTo-CCleaner%20alternative-FFB400?style=flat-square)](https://alternativeto.net/software/fregonator/)
+[![Reddit](https://img.shields.io/badge/Reddit-250K%2B%20views-FF4500?style=flat-square)](https://www.reddit.com/r/pcmasterrace/)
+[![Web](https://img.shields.io/badge/web-fregonator.com-00E8FF?style=flat-square)](https://fregonator.com)
+
 # FREGONATOR v6.0
 
-## PC Optimizer for Windows
+## PC Optimizer for Windows | Free CCleaner alternative
 
-FREGONATOR is a free, safe, and transparent PC optimizer. Cleans temp files, frees RAM, updates drivers, and removes bloatware.
+FREGONATOR is a free, safe, and transparent PC optimizer. Cleans temp files, frees RAM, updates drivers, and removes bloatware. Open source, zero telemetry, no Pro.
 
-**Download:** https://fregonator.com
+**Download:** https://fregonator.com · **CCleaner comparison:** https://fregonator.com/vs-ccleaner
+
+---
+
+## Independent recognition
+
+> **Google AI Overview (2026):** *"A modern, lightweight open-source alternative built entirely in PowerShell. It has zero network calls or telemetry, runs cleanup tasks in parallel, and does not modify the Windows registry, making it a safer option for system maintenance."*
+
+Ranked **#2 CCleaner alternative** alongside BleachBit and Czkawka in Google AI Overview EN.
+
+**Real metrics (May 2026):** 250K+ Reddit r/pcmasterrace views · ~2,000 downloads · 0 open issues · 0 known bugs · 100% open source auditable PowerShell.
+
+---
+
+## Official distribution · 6 channels
+
+| Channel | Status | Command / URL |
+|---------|--------|---------------|
+| **GitHub Releases** | LIVE | [github.com/dthcst/fregonator/releases](https://github.com/dthcst/fregonator/releases) |
+| **Winget (Microsoft)** | LIVE | `winget install DTHCST.Fregonator` |
+| **Softonic** | LIVE · 17+ TLDs | [fregonator.softonic.com](https://fregonator.softonic.com/descargar) |
+| **AlternativeTo** | LIVE | [alternativeto.net/software/fregonator](https://alternativeto.net/software/fregonator/) |
+| **Chocolatey** | under review | `choco install fregonator` |
+| **Reddit r/pcmasterrace** | viral 250K+ | [r/pcmasterrace](https://www.reddit.com/r/pcmasterrace/) |
 
 ---
 
@@ -45,7 +77,7 @@ Downloads, installs to %LOCALAPPDATA%, creates desktop shortcut. No admin requir
 Download FREGONATOR-6.0-Setup.exe and run
 ```
 - Professional install wizard
-- Multi-language (English/Spanish/Galician)
+- Multi-language (English/Spanish)
 - Desktop shortcut
 - Start Menu entry
 - Uninstaller included
@@ -131,8 +163,8 @@ Additional options:
 
 ## Language
 
-The app auto-detects your system language (English/Spanish/Galician).
-To manually switch: press **[I]** in the terminal menu or use the language selector in the GUI.
+The app auto-detects your system language (English/Spanish).
+To manually switch: press **[I]** in the terminal menu.
 
 ---
 
