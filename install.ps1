@@ -1,13 +1,13 @@
-# FREGONATOR Quick Installer v6.0
+# FREGONATOR Quick Installer v6.0.1
 # Usage: irm fregonator.com/install.ps1 | iex
 
 $ErrorActionPreference = 'Stop'
-$version = '6.0'
-$downloadUrl = 'https://github.com/dthcst/fregonator/releases/download/v6.0/FREGONATOR-6.0-Setup.zip'
+$version = '6.0.1'
+$downloadUrl = 'https://github.com/dthcst/fregonator/releases/download/v6.0.1/FREGONATOR-6.0.1-Setup.zip'
 $installPath = "$env:LOCALAPPDATA\FREGONATOR"
 
 Write-Host ''
-Write-Host '  FREGONATOR Quick Installer v6.0' -ForegroundColor Cyan
+Write-Host '  FREGONATOR Quick Installer v6.0.1' -ForegroundColor Cyan
 Write-Host '  https://fregonator.com' -ForegroundColor Gray
 Write-Host ''
 
@@ -21,6 +21,7 @@ try {
     if (Test-Path $installPath) { Remove-Item $installPath -Recurse -Force }
     New-Item -ItemType Directory -Path $installPath -Force | Out-Null
     Expand-Archive -Path $tempZip -DestinationPath $installPath -Force
+    Get-ChildItem -Path $installPath -Recurse | Unblock-File
     Write-Host '        OK' -ForegroundColor Green
 
     Write-Host '  [3/3] Creating shortcut...' -ForegroundColor Yellow

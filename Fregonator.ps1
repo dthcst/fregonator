@@ -1,5 +1,5 @@
 ﻿# =============================================================================
-# FREGONATOR v6.0 - OPTIMIZADOR DE PC
+# FREGONATOR v6.0.1 - OPTIMIZADOR DE PC
 # El modulo DEFINITIVO: Limpieza Rapida / Avanzada / Profunda
 # 100% nativo Windows - Sin dependencias externas
 # www.fregonator.com | ARCAMIA-MEMMEM
@@ -32,7 +32,7 @@ param(
 # Mostrar ayuda si se solicita
 if ($Help) {
     Write-Host ""
-    Write-Host "  FREGONATOR v6.0 - Optimizador de PC" -ForegroundColor Cyan
+    Write-Host "  FREGONATOR v6.0.1 - Optimizador de PC" -ForegroundColor Cyan
     Write-Host "  ======================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "  USO:" -ForegroundColor Yellow
@@ -330,7 +330,7 @@ Set-FondoOscuro
 # =============================================================================
 
 $script:CONFIG = @{
-    Version = "v6.0"
+    Version = "v6.0.1"
     LogPath = "$env:USERPROFILE\Documents\ARCAMIA-MEMMEM\Logs\FREGONATOR"
     HistorialPath = "$env:USERPROFILE\Documents\ARCAMIA-MEMMEM\Logs\FREGONATOR\historial.json"
     Idioma = "es"  # es, gl, en
@@ -1450,178 +1450,120 @@ function Export-FregonatorHTML {
     }
     $liberadoTxt = if ($totalGB -ge 1) { "$totalGB GB" } else { "$totalMB MB" }
 
-    # Generar filas de la tabla
+    # Generar filas de la tabla (Tron Legacy v6.0)
     $tableRows = ""
     foreach ($task in $script:TaskResults) {
+        $estadoCls = if ($task.Estado -eq "OK") { "ok" } else { "ko" }
         $estadoIcon = if ($task.Estado -eq "OK") { "&#10004;" } else { "&#8211;" }
-        $estadoColor = if ($task.Estado -eq "OK") { "#2E7D32" } else { "#F57C00" }
         $liberado = if ($task.BytesLiberados -gt 0) {
             "$([math]::Round($task.BytesLiberados/1MB,1)) MB"
         } else {
-            "-"
+            "&mdash;"
         }
         $tableRows += @"
 
 <tr>
-    <td class="Regular">$($task.Nombre)</td>
-    <td class="Secondary" style="color: $estadoColor; font-weight: 600;">$estadoIcon $($task.Estado)</td>
-    <td class="Secondary">$liberado</td>
+    <td class="task-name">$($task.Nombre)</td>
+    <td class="task-status $estadoCls">$estadoIcon $($task.Estado)</td>
+    <td class="task-size">$liberado</td>
 </tr>
 "@
     }
 
     $html = @"
-<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>FREGONATOR - Informe de Optimizacion</title>
-    <style>
-        body {
-            font-family: "Segoe UI", sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #ffffff;
-            margin: 0;
-            padding: 40px 60px;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        div.header {
-            font-family: "Segoe UI Light", sans-serif;
-            font-size: 28pt;
-            color: #00BCD4;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #00BCD4;
-            margin-bottom: 30px;
-        }
-        .subtitle {
-            font-size: 14pt;
-            color: #888;
-            margin-top: -20px;
-            margin-bottom: 30px;
-        }
-        .stats-box {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(0,188,212,0.1);
-            border: 1px solid #00BCD4;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 24pt;
-            font-weight: 600;
-            color: #00BCD4;
-        }
-        .stat-label {
-            font-size: 10pt;
-            color: #888;
-            text-transform: uppercase;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table tr.Header td {
-            font-family: "Segoe UI Semibold", sans-serif;
-            font-size: 11pt;
-            color: #00BCD4;
-            padding: 12px 8px;
-            border-bottom: 2px solid #00BCD4;
-        }
-        table tr td.Regular {
-            padding: 12px 8px;
-            font-family: "Segoe UI", sans-serif;
-            font-size: 11pt;
-            color: #ffffff;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        table tr td.Secondary {
-            padding: 12px 8px;
-            font-family: "Segoe UI", sans-serif;
-            font-size: 11pt;
-            color: #888;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        div.Copyright {
-            padding-top: 40px;
-            font-family: "Segoe UI", sans-serif;
-            font-size: 10pt;
-            color: #555;
-            text-align: center;
-        }
-        .branding {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .branding a {
-            color: #00BCD4;
-            text-decoration: none;
-        }
-        .logo-text {
-            font-size: 10pt;
-            color: #666;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FREGONATOR &middot; Informe de Optimizacion</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050810;--bg2:#0a1018;--fg:#E8FCFF;--fg2:#8aa6b0;--fg3:#4a6670;--fg4:#1a2530;--cyan:#00E8FF;--cyan-bright:#66F0FF;--cyan-dim:#00A0B4;--orange:#FF7A2D;--green:#00E678;--red:#FF4646;--f:'Space Grotesk',system-ui,sans-serif;--fdisp:'Audiowide','Space Grotesk',system-ui,sans-serif;--fmono:'JetBrains Mono','Cascadia Mono',monospace}
+body{font-family:var(--f);background:var(--bg);color:var(--fg);font-weight:300;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding:60px 4vw;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,232,255,0.012) 2px,rgba(0,232,255,0.012) 3px);pointer-events:none;z-index:9999}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(0,232,255,0.06),transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(0,232,255,0.03),transparent 50%);pointer-events:none;z-index:0}
+::selection{background:var(--cyan);color:var(--bg)}
+.container{max-width:1080px;margin:0 auto;position:relative;z-index:1}
+.eyebrow{font-family:var(--fmono);font-size:0.72rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--cyan);margin-bottom:1.6rem}
+.eyebrow::before{content:'&#9670; ';color:var(--orange)}
+h1{font-family:var(--fdisp);font-weight:400;font-size:clamp(2.4rem,7vw,5rem);line-height:1;letter-spacing:0.02em;text-transform:uppercase;color:var(--fg);text-shadow:0 0 30px rgba(0,232,255,0.3),0 0 60px rgba(0,232,255,0.15);margin-bottom:0.6rem}
+h1 .accent{color:var(--cyan);text-shadow:0 0 30px var(--cyan),0 0 60px rgba(0,232,255,0.4)}
+.sub{font-family:var(--fmono);font-size:0.85rem;color:var(--fg2);letter-spacing:0.1em;margin-bottom:3rem}
+.sub strong{color:var(--cyan);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--fg4);border:1px solid var(--fg4);margin-bottom:4rem}
+.stat{padding:2rem 1.8rem;background:var(--bg)}
+.stat .lbl{font-family:var(--fmono);font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--cyan);margin-bottom:1rem}
+.stat .val{font-family:var(--fdisp);font-size:clamp(2rem,4vw,3rem);line-height:1;color:var(--fg);text-shadow:0 0 25px rgba(0,232,255,0.35)}
+.stat.hi .val{color:var(--cyan)}
+.stat .sub2{font-family:var(--fmono);font-size:0.75rem;color:var(--fg3);margin-top:0.5rem;letter-spacing:0.05em}
+.sec-label{font-family:var(--fmono);font-size:0.72rem;letter-spacing:0.4em;text-transform:uppercase;color:var(--cyan);margin-bottom:1.6rem;display:flex;align-items:center;gap:1.5rem}
+.sec-label::after{content:'';width:80px;height:1px;background:var(--cyan-dim)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--fg4);margin-bottom:4rem}
+table{width:100%;border-collapse:collapse;font-size:0.92rem}
+th,td{text-align:left;padding:1rem 1.4rem;border-bottom:1px solid var(--fg4);font-weight:300}
+thead th{font-family:var(--fmono);font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--cyan);font-weight:500;border-bottom:2px solid var(--cyan-dim);background:var(--bg2)}
+tbody tr:hover td{background:var(--bg2)}
+.task-name{color:var(--fg);font-weight:500}
+.task-status{font-family:var(--fmono);font-size:0.82rem;letter-spacing:0.05em}
+.task-status.ok{color:var(--green)}
+.task-status.ko{color:var(--orange)}
+.task-size{font-family:var(--fmono);color:var(--fg2);text-align:right}
+.cta{padding:2.4rem 2.8rem;background:var(--bg2);border-left:2px solid var(--cyan);margin-bottom:3rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem}
+.cta .txt strong{color:var(--cyan);font-weight:500}
+.cta .txt{font-size:1rem;line-height:1.55;max-width:520px;color:var(--fg)}
+.cta .actions{display:flex;gap:0.8rem;flex-wrap:wrap}
+.btn{display:inline-block;padding:0.9rem 1.8rem;font-family:var(--f);font-weight:700;font-size:0.74rem;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;border:1px solid var(--cyan);transition:all 0.4s cubic-bezier(0.16,1,0.3,1)}
+.btn-primary{background:var(--cyan);color:var(--bg)}
+.btn-primary:hover{background:var(--cyan-bright);box-shadow:0 0 30px rgba(0,232,255,0.5)}
+.btn-shop{background:transparent;color:var(--orange);border-color:var(--orange)}
+.btn-shop:hover{background:var(--orange);color:var(--bg);box-shadow:0 0 30px rgba(255,122,45,0.4)}
+.btn-shop::after{content:' &uarr;&#x2197;'}
+footer{padding-top:2.5rem;border-top:1px solid var(--fg4);font-family:var(--fmono);font-size:0.7rem;letter-spacing:0.15em;color:var(--fg3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+footer a{color:var(--cyan);text-decoration:none}
+footer a:hover{color:var(--cyan-bright)}
+.memmem{color:var(--cyan)}
+@media (max-width:720px){body{padding:40px 4vw}.cta{flex-direction:column;align-items:flex-start}.stats{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">FREGONATOR - Informe de Optimizacion</div>
-        <div class="subtitle">$env:COMPUTERNAME - $env:USERNAME</div>
+<div class="container">
+<p class="eyebrow">&middot; Informe Tron Legacy &middot; v6.0.1 &middot;</p>
+<h1>FREGONATOR <span class="accent">complete.</span></h1>
+<p class="sub"><strong>$env:COMPUTERNAME</strong> &middot; $fecha</p>
 
-        <div class="stats-box">
-            <div class="stat-item">
-                <div class="stat-value">$tareasOK/$tareasTotal</div>
-                <div class="stat-label">Tareas completadas</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">$liberadoTxt</div>
-                <div class="stat-label">Espacio liberado</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">$durTxt</div>
-                <div class="stat-label">Duracion</div>
-            </div>
-        </div>
+<div class="stats">
+<div class="stat hi"><div class="lbl">Liberado</div><div class="val">$liberadoTxt</div><div class="sub2">espacio recuperado</div></div>
+<div class="stat"><div class="lbl">Tareas</div><div class="val">$tareasOK<span style="color:var(--fg3);font-size:0.6em">&thinsp;/&thinsp;$tareasTotal</span></div><div class="sub2">completadas correctamente</div></div>
+<div class="stat"><div class="lbl">Duracion</div><div class="val">$durTxt</div><div class="sub2">tiempo total ejecucion</div></div>
+</div>
 
-        <table>
-            <tr class="Header">
-                <td width="55%">Tarea</td>
-                <td width="20%">Estado</td>
-                <td width="25%">Liberado</td>
-            </tr>
-            <tbody>$tableRows
-            </tbody>
-        </table>
+<p class="sec-label">Detalle por tarea</p>
+<div class="tbl-wrap">
+<table>
+<thead><tr><th>Tarea</th><th>Estado</th><th style="text-align:right">Liberado</th></tr></thead>
+<tbody>$tableRows
+</tbody>
+</table>
+</div>
 
-        <div class="Copyright">
-            <div>$fecha</div>
-            <div class="branding">
-                <span class="logo-text">FREGONATOR v6.0 | ARCAMIA-MEMMEM</span>
-                <span>
-                    <a href="https://www.fregonator.com">fregonator.com</a> |
-                    <a href="https://www.costa-da-morte.com">costa-da-morte.com</a>
-                </span>
-            </div>
-        </div>
-    </div>
+<div class="cta">
+<div class="txt"><strong>FREGONATOR es open source y gratis para siempre.</strong> Si te ha sido util, considera apoyar el ecosistema visitando la tienda Costa da Morte # Death Coast.</div>
+<div class="actions">
+<a href="https://fregonator.com" class="btn btn-primary">fregonator.com</a>
+<a href="https://costa-da-morte.com" class="btn btn-shop" title="Streetwear COSTA DA MORTE # DEATH COAST">Tienda CDM</a>
+</div>
+</div>
+
+<footer>
+<div>FREGONATOR v6.0.1 &middot; <a href="https://github.com/dthcst/fregonator">github.com/dthcst/fregonator</a> &middot; <a href="https://fregonator.com/vs-ccleaner">vs CCleaner</a></div>
+<div class="memmem">// MEMMEM &middot; MENOS ES MAS &middot; MAS ES MENOS</div>
+</footer>
+</div>
 </body>
 </html>
 "@
@@ -1685,7 +1627,7 @@ function Show-FregonatorSplash {
         "                         _____|  |_____",
         "                        /              \",
         "                       |   FREGONATOR   |",
-        "                       |     v6.0     |",
+        "                       |    v6.0.1   |",
         "                        \______________/",
         "                         |||||||||||||||",
         "                         |||||||||||||||",
@@ -3947,7 +3889,7 @@ if ($AutoAvanzada) {
 if ($script:SilentMode) {
     # Modo silencioso: ejecutar y salir
     Write-Host ""
-    Write-Host "  FREGONATOR v6.0 - Modo Silencioso" -ForegroundColor Cyan
+    Write-Host "  FREGONATOR v6.0.1 - Modo Silencioso" -ForegroundColor Cyan
     Write-Host "  =====================================" -ForegroundColor Cyan
     Write-Host ""
 

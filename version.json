@@ -1,0 +1,8 @@
+{
+    "version": "6.0.1",
+    "release_date": "2026-05-03",
+    "download_url": "https://github.com/dthcst/fregonator/releases/download/v6.0.1/FREGONATOR-6.0.1-Setup.zip",
+    "changelog": "- HTML report post-limpieza refrescado al estilo Tron Legacy v6 (Audiowide + cyan + grid Tron)\n- 3 stat cards grandes: Liberado / Tareas / Duracion\n- CTA Tienda CDM en el reporte (tooltip Streetwear COSTA DA MORTE # DEATH COAST)\n- Detalle por tarea con clases nuevas (ok verde / ko naranja Tron)\n- Footer report con links fregonator.com + GitHub + /vs-ccleaner + lema MEMMEM\n- Sin cambios en el core engine (mismo motor v6.0 estable)",
+    "min_windows_version": "10.0",
+    "sha256": "b53e873f91bf15f2fb884946d8cecd2d5ee7b71607e7cdbe4896cd778ac8e8a4"
+}

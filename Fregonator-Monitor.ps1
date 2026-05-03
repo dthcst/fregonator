@@ -123,7 +123,7 @@ if (Test-Path $FontPath) {
 }
 
 # =============================================================================
-# PALETA DE COLORES - Tron Legacy (v6.0)
+# PALETA DE COLORES - Tron Legacy (v6.0.1)
 # =============================================================================
 $script:ColFondo       = [System.Drawing.Color]::FromArgb(6, 8, 14)
 $script:ColPanel       = [System.Drawing.Color]::FromArgb(12, 16, 26)

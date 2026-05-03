@@ -1,4 +1,4 @@
-<#
+﻿<#
     FREGONATOR LAUNCHER v6.0
     Menu principal con efecto Glow + Sonidos
     - Oculto de barra de tareas
@@ -104,7 +104,7 @@ $script:Texts = @{
         activar = "ACTIVAR"
         cancelar = "CANCELAR"
         infoLimpieza = "La limpieza se ejecutara en segundo plano`nusando el modo silencioso (sin ventanas)."
-        version = "v6.0"
+        version = "v6.0.1"
         minimizadoBandeja = "Minimizado a la bandeja"
         abrirFregonator = "Abrir FREGONATOR"
         optimizadorPC = "OPTIMIZADOR DE PC"
@@ -142,7 +142,7 @@ $script:Texts = @{
         activar = "ACTIVATE"
         cancelar = "CANCEL"
         infoLimpieza = "Cleanup will run in the background`nusing silent mode (no windows)."
-        version = "v6.0"
+        version = "v6.0.1"
         minimizadoBandeja = "Minimized to tray"
         abrirFregonator = "Open FREGONATOR"
         optimizadorPC = "PC OPTIMIZER"
@@ -180,7 +180,7 @@ $script:Texts = @{
         activar = "ACTIVAR"
         cancelar = "CANCELAR"
         infoLimpieza = "A limpeza executarase en segundo plano`nusando o modo silencioso (sen ventás)."
-        version = "v6.0"
+        version = "v6.0.1"
         minimizadoBandeja = "Minimizado á bandexa"
         abrirFregonator = "Abrir FREGONATOR"
         optimizadorPC = "OPTIMIZADOR DE PC"
@@ -261,7 +261,7 @@ if (Test-Path $script:SamFontPath) {
 }
 
 # ============================================================================
-# COLORES - Paleta Tron Legacy (v6.0)
+# COLORES - Paleta Tron Legacy (v6.0.1)
 # ============================================================================
 $script:ColFondo       = [System.Drawing.Color]::FromArgb(6, 8, 14)
 $script:ColBoton       = [System.Drawing.Color]::FromArgb(12, 16, 26)
