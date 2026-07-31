@@ -1,5 +1,5 @@
 ﻿<#
-    FREGONATOR LAUNCHER v6.0
+    FREGONATOR LAUNCHER v7.0
     Menu principal con efecto Glow + Sonidos
     - Oculto de barra de tareas
     2026
@@ -89,6 +89,20 @@ $script:Lang = Get-SystemLanguage
 
 $script:Texts = @{
     es = @{
+        v7Frase       = "Tu PC, limpio."
+        v7Ultra       = "ULTRA"
+        v7Nota        = "Básica: lo justo. Avanzada: a fondo. Ultra: además actualiza tus programas."
+        v7Sub1        = "Un botón y ya está. Sin cuentas, sin comandos, sin decidir nada."
+        v7Sub2        = "Sin anuncios, sin telemetría, sin versión de pago."
+        v7Tranqui     = "Tranquilo: no toca nada importante de tu PC."
+        v7Tranqui2    = "Ni tus fotos, ni tus contraseñas, ni tus programas."
+        v7Sello       = "ABUELO-PROOF"
+        v7Basica      = "LIMPIEZA BÁSICA"
+        v7BasicaSub   = "Lo de siempre. 8 tareas, unos 30 segundos."
+        v7Avanzada    = "LIMPIEZA AVANZADA"
+        v7AvanzadaSub = "A fondo. 13 tareas, tarda un poco mas."
+        v7Terminal    = "TERMINAL MS-DOS"
+        v7Salir       = "SALIR"
         limpiezaRapida = "LIMPIEZA RAPIDA"
         limpiezaCompleta = "LIMPIEZA COMPLETA"
         terminal = "TERMINAL MS-DOS"
@@ -104,7 +118,7 @@ $script:Texts = @{
         activar = "ACTIVAR"
         cancelar = "CANCELAR"
         infoLimpieza = "La limpieza se ejecutara en segundo plano`nusando el modo silencioso (sin ventanas)."
-        version = "v6.0.1"
+        version = "v7.0 - 31/07/2026"
         minimizadoBandeja = "Minimizado a la bandeja"
         abrirFregonator = "Abrir FREGONATOR"
         optimizadorPC = "OPTIMIZADOR DE PC"
@@ -127,6 +141,20 @@ $script:Texts = @{
         alIniciarSesion = "Al iniciar sesion"
     }
     en = @{
+        v7Frase       = "Your PC, clean."
+        v7Ultra       = "ULTRA"
+        v7Nota        = "Basic: the essentials. Deep: thorough. Ultra: also updates your apps."
+        v7Sub1        = "One button and you are done. No accounts, no commands, nothing to decide."
+        v7Sub2        = "No ads, no telemetry, no paid version."
+        v7Tranqui     = "Relax: it never touches anything that matters on your PC."
+        v7Tranqui2    = "Not your photos, not your passwords, not your programs."
+        v7Sello       = "GRANDPA-PROOF"
+        v7Basica      = "BASIC CLEAN"
+        v7BasicaSub   = "The usual. 8 tasks, about 30 seconds."
+        v7Avanzada    = "DEEP CLEAN"
+        v7AvanzadaSub = "The full thing. 13 tasks, takes a bit longer."
+        v7Terminal    = "MS-DOS TERMINAL"
+        v7Salir       = "EXIT"
         limpiezaRapida = "QUICK CLEANUP"
         limpiezaCompleta = "FULL CLEANUP"
         terminal = "TERMINAL MS-DOS"
@@ -142,7 +170,7 @@ $script:Texts = @{
         activar = "ACTIVATE"
         cancelar = "CANCEL"
         infoLimpieza = "Cleanup will run in the background`nusing silent mode (no windows)."
-        version = "v6.0.1"
+        version = "v7.0 - 31/07/2026"
         minimizadoBandeja = "Minimized to tray"
         abrirFregonator = "Open FREGONATOR"
         optimizadorPC = "PC OPTIMIZER"
@@ -165,6 +193,20 @@ $script:Texts = @{
         alIniciarSesion = "On login"
     }
     gl = @{
+        v7Frase       = "O teu PC, limpo."
+        v7Ultra       = "ULTRA"
+        v7Nota        = "Básica: o xusto. Avanzada: a fondo. Ultra: ademais actualiza os teus programas."
+        v7Sub1        = "Un botón e xa está. Sen contas, sen comandos, sen decidir nada."
+        v7Sub2        = "Sen anuncios, sen telemetría, sen versión de pago."
+        v7Tranqui     = "Tranquilo: non toca nada importante do teu PC."
+        v7Tranqui2    = "Nin as túas fotos, nin os teus contrasinais, nin os teus programas."
+        v7Sello       = "AVOO-PROOF"
+        v7Basica      = "LIMPEZA BÁSICA"
+        v7BasicaSub   = "O de sempre. 8 tarefas, uns 30 segundos."
+        v7Avanzada    = "LIMPEZA AVANZADA"
+        v7AvanzadaSub = "A fondo. 13 tarefas, tarda un pouco mais."
+        v7Terminal    = "TERMINAL MS-DOS"
+        v7Salir       = "SAIR"
         limpiezaRapida = "LIMPEZA RAPIDA"
         limpiezaCompleta = "LIMPEZA COMPLETA"
         terminal = "TERMINAL MS-DOS"
@@ -180,7 +222,7 @@ $script:Texts = @{
         activar = "ACTIVAR"
         cancelar = "CANCELAR"
         infoLimpieza = "A limpeza executarase en segundo plano`nusando o modo silencioso (sen ventás)."
-        version = "v6.0.1"
+        version = "v7.0 - 31/07/2026"
         minimizadoBandeja = "Minimizado á bandexa"
         abrirFregonator = "Abrir FREGONATOR"
         optimizadorPC = "OPTIMIZADOR DE PC"
@@ -223,17 +265,12 @@ if (Test-Path $script:BarkSound) {
 
 # Funcion para reproducir ladrido (respeta toggle)
 function Play-Bark {
-    if ($script:SoundEnabled -and $script:SoundPlayer) {
-        try { $script:SoundPlayer.Play() } catch {}
-    }
+    # v7: sin sonidos (decision CEO 31/07/2026)
 }
 
 # Funcion para sonido hover tipo "fregona-sable" (swoosh ascendente)
 function Play-HoverSound {
-    if (-not $script:SoundEnabled) { return }
-    try {
-        [Console]::Beep(500, 30)
-    } catch {}
+    # v7: sin sonidos (decision CEO 31/07/2026)
 }
 
 # ============================================================================
@@ -261,29 +298,29 @@ if (Test-Path $script:SamFontPath) {
 }
 
 # ============================================================================
-# COLORES - Paleta Tron Legacy (v6.0.1)
+# COLORES - Paleta v7: negro memmem + acento ambar
 # ============================================================================
-$script:ColFondo       = [System.Drawing.Color]::FromArgb(6, 8, 14)
-$script:ColBoton       = [System.Drawing.Color]::FromArgb(12, 16, 26)
-$script:ColCyan        = [System.Drawing.Color]::FromArgb(0, 232, 255)
-$script:ColCyanBright  = [System.Drawing.Color]::FromArgb(102, 240, 255)
-$script:ColCyanDark    = [System.Drawing.Color]::FromArgb(0, 160, 180)
-$script:ColCyanDim     = [System.Drawing.Color]::FromArgb(0, 80, 100)
-$script:ColGris        = [System.Drawing.Color]::FromArgb(55, 62, 75)
-$script:ColNegro       = [System.Drawing.Color]::FromArgb(4, 6, 12)
-$script:ColRojo        = [System.Drawing.Color]::FromArgb(255, 70, 70)
-$script:ColVerde       = [System.Drawing.Color]::FromArgb(0, 230, 120)
-$script:ColGlow        = [System.Drawing.Color]::FromArgb(25, 0, 200, 255)
-$script:ColBorder      = [System.Drawing.Color]::FromArgb(0, 120, 140)
-$script:ColBorderHover = [System.Drawing.Color]::FromArgb(0, 232, 255)
-$script:ColPanelHover  = [System.Drawing.Color]::FromArgb(16, 22, 36)
-$script:ColGridLine    = [System.Drawing.Color]::FromArgb(15, 20, 32)
+$script:ColFondo       = [System.Drawing.Color]::FromArgb(255, 255, 255)
+$script:ColBoton       = [System.Drawing.Color]::FromArgb(255, 255, 255)
+$script:ColCyan        = [System.Drawing.Color]::FromArgb(17, 17, 17)
+$script:ColCyanBright  = [System.Drawing.Color]::FromArgb(0, 0, 0)
+$script:ColCyanDark    = [System.Drawing.Color]::FromArgb(60, 60, 60)
+$script:ColCyanDim     = [System.Drawing.Color]::FromArgb(110, 110, 110)
+$script:ColGris        = [System.Drawing.Color]::FromArgb(110, 110, 110)
+$script:ColNegro       = [System.Drawing.Color]::FromArgb(17, 17, 17)
+$script:ColRojo        = [System.Drawing.Color]::FromArgb(200, 50, 50)
+$script:ColVerde       = [System.Drawing.Color]::FromArgb(30, 150, 80)
+$script:ColGlow        = [System.Drawing.Color]::FromArgb(0, 255, 255, 255)
+$script:ColBorder      = [System.Drawing.Color]::FromArgb(210, 210, 210)
+$script:ColBorderHover = [System.Drawing.Color]::FromArgb(17, 17, 17)
+$script:ColPanelHover  = [System.Drawing.Color]::FromArgb(245, 245, 245)
+$script:ColGridLine    = [System.Drawing.Color]::FromArgb(235, 235, 235)
 
 # ============================================================================
 # VENTANA PRINCIPAL - Centrada manualmente
 # ============================================================================
-$formWidth = 540
-$formHeight = 600
+$formWidth = 620
+$formHeight = 500
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "FREGONATOR"
@@ -348,9 +385,18 @@ $form.Location = New-Object System.Drawing.Point(
 # ============================================================================
 # HEADER - Texto futurista SAM font + iconos integrados
 # ============================================================================
+# Logo de la cabecera: Eustaquio bebe. Si falta, la app sigue igual.
+$script:LogoImg = $null
+try {
+    $rutaLogo = Join-Path $PSScriptRoot "Logo-Fregonator-v7.png"
+    if (Test-Path $rutaLogo) { $script:LogoImg = [System.Drawing.Image]::FromFile($rutaLogo) }
+    $rutaSello = Join-Path $PSScriptRoot "Sello-Abuelo-Proof.png"
+    if (Test-Path $rutaSello) { $script:SelloImg = [System.Drawing.Image]::FromFile($rutaSello) }
+} catch { }
+
 $pnlHeader = New-Object System.Windows.Forms.Panel
 $pnlHeader.Location = New-Object System.Drawing.Point(0, 0)
-$pnlHeader.Size = New-Object System.Drawing.Size($formWidth, 115)
+$pnlHeader.Size = New-Object System.Drawing.Size($formWidth, 248)
 $pnlHeader.BackColor = $script:ColFondo
 
 $pnlHeader.Add_Paint({
@@ -361,29 +407,88 @@ $pnlHeader.Add_Paint({
 
     $w = $sender.Width
 
-    # "FREGONATOR" en SAM font grande, centrado
-    $fTitle = New-Object System.Drawing.Font($script:samFamily, 36)
+    # v7: el logo entero (mascota + nombre), igual que MEMMEM
     $sf = New-Object System.Drawing.StringFormat
     $sf.Alignment = "Center"
-    $titleY = 12
 
-    # Glow multi-pase (mas visible)
-    for ($i = 4; $i -ge 1; $i--) {
-        $alpha = [int](12 + (4 - $i) * 4)
-        $glowBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb($alpha, 0, 180, 255))
-        $g.DrawString("FREGONATOR", $fTitle, $glowBrush, ($w / 2), ($titleY - $i), $sf)
-        $g.DrawString("FREGONATOR", $fTitle, $glowBrush, ($w / 2), ($titleY + $i), $sf)
-        $g.DrawString("FREGONATOR", $fTitle, $glowBrush, (($w / 2) - $i), $titleY, $sf)
-        $g.DrawString("FREGONATOR", $fTitle, $glowBrush, (($w / 2) + $i), $titleY, $sf)
+    if ($script:LogoImg) {
+        $altoLogo = 44
+        $anchoLogo = [int]($script:LogoImg.Width * $altoLogo / $script:LogoImg.Height)
+        $g.DrawImage($script:LogoImg, [int](($w - $anchoLogo) / 2), 26, $anchoLogo, $altoLogo)
     }
-    # Texto principal
-    $g.DrawString("FREGONATOR", $fTitle, (New-Object System.Drawing.SolidBrush($script:ColCyan)), ($w / 2), $titleY, $sf)
 
-    # Subtitulo
-    $fSub = New-Object System.Drawing.Font("Segoe UI", 9)
-    $subTxt = switch ($script:Lang) { "es" { "OPTIMIZADOR DE PC" }; "gl" { "OPTIMIZADOR DE PC" }; default { "PC OPTIMIZER" } }
-    $g.DrawString($subTxt, $fSub, (New-Object System.Drawing.SolidBrush($script:ColCyanDim)), ($w / 2), 68, $sf)
+    # la frase, que es lo que se lee primero
+    $fFrase = New-Object System.Drawing.Font("Segoe UI Light", 26)
+    $g.DrawString((Get-Text "v7Frase"), $fFrase, (New-Object System.Drawing.SolidBrush($script:ColNegro)), ($w / 2), 84, $sf)
 
+    # dos lineas de apoyo
+    $fSub = New-Object System.Drawing.Font("Segoe UI", 10)
+    $g.DrawString((Get-Text "v7Sub1"), $fSub, (New-Object System.Drawing.SolidBrush($script:ColCyanDim)), ($w / 2), 132, $sf)
+    $g.DrawString((Get-Text "v7Sub2"), $fSub, (New-Object System.Drawing.SolidBrush($script:ColCyanDim)), ($w / 2), 152, $sf)
+
+    # v7: el mensaje que quita el miedo, con el sello ABUELO-PROOF
+    $g.SmoothingMode = "AntiAlias"
+
+    $fTranqui  = New-Object System.Drawing.Font("Segoe UI Semibold", 10)
+    $fTranqui2 = New-Object System.Drawing.Font("Segoe UI", 9)
+    $fSello    = New-Object System.Drawing.Font("Segoe UI Semibold", 8)
+
+    $txtSello   = Get-Text "v7Sello"
+    $medSello   = $g.MeasureString($txtSello, $fSello)
+    $anchoSello = [int]$medSello.Width + 22
+    $altoSello  = 22
+
+    $yCaja  = 176
+    $altoCj = 62
+    $margen = 34
+    $rectCaja = New-Object System.Drawing.Rectangle($margen, $yCaja, ($w - $margen * 2), $altoCj)
+
+    # fondo muy suave + borde fino, nada de cajas duras
+    $brFondo = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(250, 250, 250))
+    $g.FillRectangle($brFondo, $rectCaja)
+    $penCaja = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(228, 228, 228), 1)
+    $g.DrawRectangle($penCaja, $rectCaja)
+
+    # el recuadrito negro con el texto, pisando el borde superior de la caja
+    $fSelloTxt = New-Object System.Drawing.Font("Segoe UI Semibold", 8)
+    $txtSelloB = Get-Text "v7Sello"
+    $medSelloB = $g.MeasureString($txtSelloB, $fSelloTxt)
+    $anchoSelloB = [int]$medSelloB.Width + 22
+    $xSelloB = $rectCaja.Left + 14
+    $ySelloB = $yCaja - 11
+    $g.FillRectangle((New-Object System.Drawing.SolidBrush($script:ColNegro)), $xSelloB, $ySelloB, $anchoSelloB, 22)
+    $sfCB = New-Object System.Drawing.StringFormat
+    $sfCB.Alignment = "Center"; $sfCB.LineAlignment = "Center"
+    $g.DrawString($txtSelloB, $fSelloTxt, (New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)), `
+        (New-Object System.Drawing.RectangleF($xSelloB, $ySelloB, $anchoSelloB, 22)), $sfCB)
+
+    # el sello ABUELO-PROOF de verdad, pisando la esquina derecha de la caja
+    if ($script:SelloImg) {
+        $ladoSello = 84
+        $xSello = $rectCaja.Right - $ladoSello + 18
+        $ySello = $yCaja + [int](($altoCj - $ladoSello) / 2)
+        $g.DrawImage($script:SelloImg, $xSello, $ySello, $ladoSello, [int]($script:SelloImg.Height * $ladoSello / $script:SelloImg.Width))
+    } else {
+        $fSello = New-Object System.Drawing.Font("Segoe UI Semibold", 8)
+        $txtSello = Get-Text "v7Sello"
+        $medSello = $g.MeasureString($txtSello, $fSello)
+        $anchoSello = [int]$medSello.Width + 22
+        $xSello = $rectCaja.Right - $anchoSello - 14
+        $ySello = $yCaja - 11
+        $g.FillRectangle((New-Object System.Drawing.SolidBrush($script:ColNegro)), $xSello, $ySello, $anchoSello, 22)
+        $sfC = New-Object System.Drawing.StringFormat
+        $sfC.Alignment = "Center"; $sfC.LineAlignment = "Center"
+        $g.DrawString($txtSello, $fSello, (New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)), `
+            (New-Object System.Drawing.RectangleF($xSello, $ySello, $anchoSello, 22)), $sfC)
+    }
+
+    # las dos lineas, alineadas a la izquierda de la caja
+    $sfL = New-Object System.Drawing.StringFormat
+    $sfL.Alignment = "Near"
+    $g.DrawString((Get-Text "v7Tranqui"), $fTranqui, (New-Object System.Drawing.SolidBrush($script:ColNegro)), `
+        ($margen + 16), ($yCaja + 13), $sfL)
+    $g.DrawString((Get-Text "v7Tranqui2"), $fTranqui2, (New-Object System.Drawing.SolidBrush($script:ColCyanDim)), `
+        ($margen + 16), ($yCaja + 34), $sfL)
 })
 
 # --- Iconos integrados DENTRO del header panel ---
@@ -454,7 +559,8 @@ $btnLangH.Add_MouseLeave({
     $this.Tag.Hover = $false
     $this.Invalidate()
 })
-$pnlHeader.Controls.Add($btnLangH)
+# v7: fuera del header (idioma en el pie, sonidos desactivados)
+# $pnlHeader.Controls.Add($btnLangH)
 
 # Sonido
 $btnSoundH = New-Object System.Windows.Forms.Button
@@ -502,7 +608,8 @@ $btnSoundH.Add_Click({
     $script:SoundEnabled = -not $script:SoundEnabled
     $this.Invalidate()
 })
-$pnlHeader.Controls.Add($btnSoundH)
+# v7: fuera del header (idioma en el pie, sonidos desactivados)
+# $pnlHeader.Controls.Add($btnSoundH)
 
 $form.Controls.Add($pnlHeader)
 
@@ -538,7 +645,7 @@ function New-GlowButton {
 
         $fTitulo = New-Object System.Drawing.Font($script:citaroFamily, 16)
         $fDesc = New-Object System.Drawing.Font("Segoe UI", 10)
-        $fAtajo = New-Object System.Drawing.Font("Consolas", 9, [System.Drawing.FontStyle]::Bold)
+        $fAtajo = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
 
         $w = $sender.Width
         $h = $sender.Height
@@ -636,28 +743,115 @@ $sepTop.Size = New-Object System.Drawing.Size(430, 1)
 $sepTop.BackColor = $script:ColGridLine
 $form.Controls.Add($sepTop)
 
-$btn1 = New-GlowButton -Titulo (Get-Text "limpiezaRapida") -Descripcion (Get-Text "descRapida") -Atajo "[1]" -Y 132 -OnClick {
+# ============================================================================
+# v7: dos botones, como MEMMEM. El principal en negro solido, el otro solo
+# con borde. Debajo, enlaces subrayados para lo secundario.
+# ============================================================================
+function New-BotonV7 {
+    param(
+        [string]$Clave,
+        [int]$X,
+        [int]$Y,
+        [int]$Ancho = 210,
+        [switch]$Principal,
+        [scriptblock]$OnClick
+    )
+
+    $b = New-Object System.Windows.Forms.Button
+    $b.FlatStyle = "Flat"
+    $b.FlatAppearance.BorderSize = 1
+    $b.Location = New-Object System.Drawing.Point($X, $Y)
+    $b.Size = New-Object System.Drawing.Size($Ancho, 46)
+    $b.Cursor = "Hand"
+    $b.Text = ""
+    $b.Tag = @{ Hover = $false; K = $Clave; P = [bool]$Principal }
+
+    if ($Principal) {
+        $b.BackColor = $script:ColNegro
+        $b.FlatAppearance.BorderColor = $script:ColNegro
+        $b.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(45, 45, 45)
+    } else {
+        $b.BackColor = $script:ColFondo
+        $b.FlatAppearance.BorderColor = $script:ColBorder
+        $b.FlatAppearance.MouseOverBackColor = $script:ColPanelHover
+    }
+
+    $b.Add_Paint({
+        param($sender, $e)
+        $g = $e.Graphics
+        $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::ClearTypeGridFit
+        $sf = New-Object System.Drawing.StringFormat
+        $sf.Alignment = "Center"
+        $sf.LineAlignment = "Center"
+        $f = New-Object System.Drawing.Font("Segoe UI Semibold", 10.5)
+        $col = if ($sender.Tag.P) { [System.Drawing.Color]::White } else { $script:ColNegro }
+        $r = New-Object System.Drawing.RectangleF(0, 0, $sender.Width, $sender.Height)
+        $g.DrawString((Get-Text $sender.Tag.K), $f, (New-Object System.Drawing.SolidBrush($col)), $r, $sf)
+    })
+
+    $b.Add_MouseEnter({ $this.Tag.Hover = $true;  $this.Invalidate() })
+    $b.Add_MouseLeave({ $this.Tag.Hover = $false; $this.Invalidate() })
+    $b.Add_Click($OnClick)
+    return $b
+}
+
+# Los dos botones, centrados y juntos
+$anchoBtn = 172
+$hueco = 12
+$xIzq = [int](($formWidth - ($anchoBtn * 3 + $hueco * 2)) / 2)
+
+$btnBasica = New-BotonV7 -Clave "v7Basica" -X $xIzq -Y 281 -Ancho $anchoBtn -Principal -OnClick {
     Start-FregonatorDual -Modo "-AutoRapida"
 }
-$form.Controls.Add($btn1)
+$form.Controls.Add($btnBasica)
 
-# ============================================================================
-# BOTON 2 - LIMPIEZA COMPLETA
-# ============================================================================
-$btn2 = New-GlowButton -Titulo (Get-Text "limpiezaCompleta") -Descripcion (Get-Text "descCompleta") -Atajo "[2]" -Y 232 -OnClick {
+$btnAvanzada = New-BotonV7 -Clave "v7Avanzada" -X ($xIzq + $anchoBtn + $hueco) -Y 281 -Ancho $anchoBtn -OnClick {
     Start-FregonatorDual -Modo "-AutoAvanzada"
 }
-$form.Controls.Add($btn2)
+$form.Controls.Add($btnAvanzada)
 
-# ============================================================================
-# BOTON 3 - MENU TERMINAL MS-DOS
-# ============================================================================
-$btn3 = New-GlowButton -Titulo (Get-Text "terminal") -Descripcion (Get-Text "descTerminal") -Atajo "[3]" -Y 332 -OnClick {
+$btnUltra = New-BotonV7 -Clave "v7Ultra" -X ($xIzq + ($anchoBtn + $hueco) * 2) -Y 281 -Ancho $anchoBtn -OnClick {
+    Start-FregonatorDual -Modo "-AutoUltra"
+}
+$form.Controls.Add($btnUltra)
+
+# Linea de apoyo bajo los botones
+$lblNota = New-Object System.Windows.Forms.Label
+$lblNota.Text = Get-Text "v7Nota"
+$lblNota.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$lblNota.ForeColor = $script:ColCyanDim
+$lblNota.BackColor = $script:ColFondo
+$lblNota.TextAlign = "MiddleCenter"
+$lblNota.Location = New-Object System.Drawing.Point(0, 348)
+$lblNota.Size = New-Object System.Drawing.Size($formWidth, 22)
+$form.Controls.Add($lblNota)
+
+# ---------------------------------------------------------------------------
+# Enlaces secundarios, sin cajas
+# ---------------------------------------------------------------------------
+function New-EnlaceV7 {
+    param([string]$Clave, [int]$X, [int]$Y, [int]$Ancho, [scriptblock]$OnClick)
+    $l = New-Object System.Windows.Forms.LinkLabel
+    $l.Text = Get-Text $Clave
+    $l.Font = New-Object System.Drawing.Font("Segoe UI", 9.5)
+    $l.LinkColor = $script:ColCyanDark
+    $l.ActiveLinkColor = $script:ColNegro
+    $l.VisitedLinkColor = $script:ColCyanDark
+    $l.BackColor = $script:ColFondo
+    $l.TextAlign = "MiddleCenter"
+    $l.Location = New-Object System.Drawing.Point($X, $Y)
+    $l.Size = New-Object System.Drawing.Size($Ancho, 24)
+    $l.Cursor = "Hand"
+    $l.Add_LinkClicked($OnClick)
+    return $l
+}
+
+$lnkTerminal = New-EnlaceV7 -Clave "v7Terminal" -X 0 -Y 384 -Ancho $formWidth -OnClick {
     $form.Hide()
     Start-Process powershell -ArgumentList "-ExecutionPolicy Bypass -File `"$script:FregonatorScript`"" -Verb RunAs
     $form.Close()
 }
-$form.Controls.Add($btn3)
+$form.Controls.Add($lnkTerminal)
 
 # ============================================================================
 # BOTON 4 - PROGRAMAR LIMPIEZA (OCULTO - Implementado pero no necesario por ahora)
@@ -878,7 +1072,8 @@ $btnSalir.Add_MouseLeave({
     $this.Invalidate()
 })
 $btnSalir.Add_Click({ $form.Close() })
-$form.Controls.Add($btnSalir)
+# v7: el Salir grande fuera; en MEMMEM es un enlace del pie
+# $form.Controls.Add($btnSalir)
 
 # ============================================================================
 # EVENTO CLICK IDIOMA (referencia a $btnLangH dentro del header)
@@ -923,87 +1118,57 @@ $form.Controls.Add($sepBottom)
 $footerDim = [System.Drawing.Color]::FromArgb(45, 50, 60)
 
 # Footer centrado: usar un panel owner-drawn para centrar perfectamente
-$pnlFooter = New-Object System.Windows.Forms.Panel
-$pnlFooter.Location = New-Object System.Drawing.Point(0, 510)
-$pnlFooter.Size = New-Object System.Drawing.Size($formWidth, 30)
-$pnlFooter.BackColor = $script:ColFondo
-$pnlFooter.Cursor = "Default"
+# ============================================================================
+# PIE v7: Salir | idioma | version con fecha. Igual que MEMMEM.
+# ============================================================================
+$yPie = $formHeight - 78
 
-# Track hover zones para links clickeables
-$pnlFooter.Tag = @{ HoverZone = ""; Zones = @() }
+$lnkSalir = New-Object System.Windows.Forms.LinkLabel
+$lnkSalir.Text = Get-Text "v7Salir"
+$lnkSalir.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$lnkSalir.LinkColor = $script:ColCyanDim
+$lnkSalir.ActiveLinkColor = $script:ColNegro
+$lnkSalir.BackColor = $script:ColFondo
+$lnkSalir.TextAlign = "MiddleRight"
+$lnkSalir.Location = New-Object System.Drawing.Point(150, $yPie)
+$lnkSalir.Size = New-Object System.Drawing.Size(60, 26)
+$lnkSalir.Cursor = "Hand"
+$lnkSalir.Add_LinkClicked({ $form.Close() })
+$form.Controls.Add($lnkSalir)
 
-$pnlFooter.Add_Paint({
-    param($sender, $e)
-    $g = $e.Graphics
-    $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::ClearTypeGridFit
-    $w = $sender.Width
-
-    $fFont = New-Object System.Drawing.Font("Segoe UI", 8)
-    $fConsolaFont = New-Object System.Drawing.Font("Consolas", 8)
-    $dimBrush = New-Object System.Drawing.SolidBrush($footerDim)
-    $sepBrush = New-Object System.Drawing.SolidBrush($script:ColGridLine)
-    $cyanBrush = New-Object System.Drawing.SolidBrush($script:ColCyan)
-
-    $parts = @(
-        @{ Text = "v6.0"; Font = $fConsolaFont; Brush = $dimBrush; Link = "" },
-        @{ Text = "  |  "; Font = $fFont; Brush = $sepBrush; Link = "" },
-        @{ Text = "fregonator.com"; Font = $fFont; Brush = $dimBrush; Link = "https://fregonator.com" },
-        @{ Text = "  |  "; Font = $fFont; Brush = $sepBrush; Link = "" },
-        @{ Text = "costa-da-morte.com"; Font = $fFont; Brush = $dimBrush; Link = "https://costa-da-morte.com" }
-    )
-
-    # Medir ancho total
-    $totalW = 0
-    foreach ($p in $parts) { $totalW += [int]($g.MeasureString($p.Text, $p.Font).Width) }
-    $startX = [int](($w - $totalW) / 2)
-    $y = 6
-    $curX = $startX
-
-    $zones = @()
-    $hoverZone = $sender.Tag.HoverZone
-
-    foreach ($p in $parts) {
-        $sz = $g.MeasureString($p.Text, $p.Font)
-        $brush = $p.Brush
-        if ($p.Link -ne "" -and $hoverZone -eq $p.Link) { $brush = $cyanBrush }
-        $g.DrawString($p.Text, $p.Font, $brush, $curX, $y)
-        if ($p.Link -ne "") {
-            $zones += @{ X1 = [int]$curX; X2 = [int]($curX + $sz.Width); Link = $p.Link }
-        }
-        $curX += [int]$sz.Width
+$cmbIdioma = New-Object System.Windows.Forms.ComboBox
+$cmbIdioma.DropDownStyle = "DropDownList"
+$cmbIdioma.FlatStyle = "Flat"
+$cmbIdioma.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$cmbIdioma.BackColor = $script:ColFondo
+$cmbIdioma.ForeColor = $script:ColNegro
+$cmbIdioma.Location = New-Object System.Drawing.Point(215, $yPie)
+$cmbIdioma.Size = New-Object System.Drawing.Size(110, 26)
+[void]$cmbIdioma.Items.AddRange(@("Español", "Galego", "English"))
+$cmbIdioma.SelectedIndex = switch ($script:Lang) { "es" { 0 }; "gl" { 1 }; default { 2 } }
+$cmbIdioma.Add_SelectedIndexChanged({
+    $script:Lang = switch ($cmbIdioma.SelectedIndex) { 0 { "es" }; 1 { "gl" }; default { "en" } }
+    $form.Refresh()
+    foreach ($c in $form.Controls) {
+        if ($c.Tag -and $c.Tag.K) { $c.Invalidate() }
+        elseif ($c -is [System.Windows.Forms.LinkLabel] -or $c -is [System.Windows.Forms.Label]) { $c.Invalidate() }
     }
-    $sender.Tag.Zones = $zones
+    $lnkSalir.Text    = Get-Text "v7Salir"
+    $lnkTerminal.Text = Get-Text "v7Terminal"
+    $lblNota.Text     = Get-Text "v7Nota"
+    $lblVersionV7.Text = "FREGONATOR " + (Get-Text "version")
 })
+$form.Controls.Add($cmbIdioma)
 
-$pnlFooter.Add_MouseMove({
-    param($sender, $e)
-    $mx = $e.X
-    $newZone = ""
-    foreach ($z in $sender.Tag.Zones) {
-        if ($mx -ge $z.X1 -and $mx -le $z.X2) { $newZone = $z.Link; break }
-    }
-    if ($newZone -ne $sender.Tag.HoverZone) {
-        $sender.Tag.HoverZone = $newZone
-        $sender.Cursor = if ($newZone -ne "") { [System.Windows.Forms.Cursors]::Hand } else { [System.Windows.Forms.Cursors]::Default }
-        $sender.Invalidate()
-    }
-})
-
-$pnlFooter.Add_MouseLeave({
-    $this.Tag.HoverZone = ""
-    $this.Cursor = [System.Windows.Forms.Cursors]::Default
-    $this.Invalidate()
-})
-
-$pnlFooter.Add_Click({
-    param($sender, $e)
-    $mx = $e.X
-    foreach ($z in $sender.Tag.Zones) {
-        if ($mx -ge $z.X1 -and $mx -le $z.X2) { Start-Process $z.Link; break }
-    }
-})
-
-$form.Controls.Add($pnlFooter)
+$lblVersionV7 = New-Object System.Windows.Forms.Label
+$lblVersionV7.Text = "FREGONATOR " + (Get-Text "version")
+$lblVersionV7.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$lblVersionV7.ForeColor = $script:ColCyanDim
+$lblVersionV7.BackColor = $script:ColFondo
+$lblVersionV7.TextAlign = "MiddleLeft"
+$lblVersionV7.Location = New-Object System.Drawing.Point(338, $yPie)
+$lblVersionV7.Size = New-Object System.Drawing.Size(220, 26)
+$form.Controls.Add($lblVersionV7)
 
 # ============================================================================
 # ATAJOS DE TECLADO
@@ -1029,13 +1194,66 @@ $form.KeyPreview = $true
 # EVENTO AL MOSTRAR - Ladrido de Nala
 # ============================================================================
 $form.Add_Shown({
-    Play-Bark
+    # v7: sin sonidos (decision CEO 31/07/2026)
+    $form.Refresh()
 })
+
+
+# ============================================================================
+# DESPEDIDA v7 - Tequila y Nala. Sin nombres, sin texto encima.
+# ============================================================================
+function Show-DespedidaV7 {
+    $rutaFoto = Join-Path $script:ScriptPath "nala-tequila.jpg"
+    if (-not (Test-Path $rutaFoto)) { return }
+
+    try { $foto = [System.Drawing.Image]::FromFile($rutaFoto) } catch { return }
+
+    $d = New-Object System.Windows.Forms.Form
+    $d.FormBorderStyle = "None"
+    $d.StartPosition = "CenterScreen"
+    $d.BackColor = [System.Drawing.Color]::White
+    $d.TopMost = $true
+    $d.ShowInTaskbar = $false
+
+    $margen = 26
+    $d.Size = New-Object System.Drawing.Size(($foto.Width + $margen * 2), ($foto.Height + $margen * 2 + 34))
+
+    $pb = New-Object System.Windows.Forms.PictureBox
+    $pb.Image = $foto
+    $pb.SizeMode = "Zoom"
+    $pb.Location = New-Object System.Drawing.Point($margen, $margen)
+    $pb.Size = New-Object System.Drawing.Size($foto.Width, $foto.Height)
+    $d.Controls.Add($pb)
+
+    # borde fino, como el resto de la app
+    $d.Add_Paint({
+        param($sender, $e)
+        $lapiz = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(225, 225, 225), 1)
+        $e.Graphics.DrawRectangle($lapiz, 0, 0, ($sender.Width - 1), ($sender.Height - 1))
+    })
+
+    # se cierra sola, o con un clic, o con una tecla
+    $t = New-Object System.Windows.Forms.Timer
+    $t.Interval = 2600
+    $t.Add_Tick({ $t.Stop(); $d.Close() })
+    $t.Start()
+
+    $d.Add_Click({ $d.Close() })
+    $pb.Add_Click({ $d.Close() })
+    $d.KeyPreview = $true
+    $d.Add_KeyDown({ $d.Close() })
+
+    [void]$d.ShowDialog()
+    $d.Dispose()
+}
 
 # ============================================================================
 # MOSTRAR (Show + Application.Run para soportar systray hide/show)
 # ============================================================================
 [System.Windows.Forms.Application]::Run($form)
+
+# v7: Tequila y Nala al cerrar
+Show-DespedidaV7
 
 # Liberar mutex y tray al cerrar
 $script:TrayIcon.Visible = $false

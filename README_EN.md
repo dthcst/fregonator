@@ -7,7 +7,7 @@
 [![Reddit](https://img.shields.io/badge/Reddit-250K%2B%20views-FF4500?style=flat-square)](https://www.reddit.com/r/pcmasterrace/)
 [![Web](https://img.shields.io/badge/web-fregonator.com-00E8FF?style=flat-square)](https://fregonator.com)
 
-# FREGONATOR v6.0
+# FREGONATOR v7.0
 
 ## PC Optimizer for Windows | Free CCleaner alternative
 

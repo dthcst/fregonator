@@ -26,6 +26,7 @@ param(
     [switch]$Avanzada,      # Ejecuta UN CLICK AVANZADA en modo silencioso
     [switch]$AutoRapida,    # Ejecuta Limpieza Rapida con UI completa (para launcher)
     [switch]$AutoAvanzada,  # Ejecuta Limpieza Avanzada con UI completa (para launcher)
+    [switch]$AutoUltra,     # v7: Avanzada + actualizar todos los programas (winget)
     [switch]$Help           # Muestra ayuda de parametros
 )
 
@@ -54,7 +55,7 @@ if ($Help) {
 # Guardar modo silencioso en variable de script
 $script:SilentMode = $Silent -or $Avanzada
 # Modo GUI: viene del Launcher, motor oculto, sin interaccion
-$script:ModoGUI = $AutoRapida -or $AutoAvanzada
+$script:ModoGUI = $AutoRapida -or $AutoAvanzada -or $AutoUltra
 
 # =============================================================================
 # AUTO-ELEVACION A ADMINISTRADOR
@@ -66,8 +67,15 @@ if (-not $isAdmin) {
     $arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`""
     if ($Silent) { $arguments += " -Silent" }
     if ($Avanzada) { $arguments += " -Avanzada" }
-    if ($AutoRapida) { $arguments += " -AutoRapida" }
-    if ($AutoAvanzada) { $arguments += " -AutoAvanzada" }
+    # v7: ULTRA = avanzada + actualizar programas. Se marca con una variable
+# global que la lista de tareas consulta para anadir winget al final.
+if ($AutoUltra) {
+    $script:ModoUltra = $true
+}
+
+if ($AutoRapida) { $arguments += " -AutoRapida" }
+    if ($AutoAvanzada -or $AutoUltra) { $arguments += " -AutoAvanzada" }
+    if ($AutoUltra) { $arguments += " -AutoUltra" }
     try {
         Start-Process powershell.exe -ArgumentList $arguments -Verb RunAs
     } catch {
@@ -245,76 +253,8 @@ Update-Monitor -Etapa "FREGONATOR" -Progreso 0 -Log $_initMsg
 # SPLASH SCREEN - NALA
 # =============================================================================
 function Show-NalaSplash {
-    Clear-Host
-    $cocoColors = @("DarkYellow","Yellow","Magenta","Red","DarkMagenta","Blue","Cyan","Green")
-    $nalaArt = @(
-        "",
-        "",
-        "                   ......                  .............  ",
-        "                .....;;...                ................  ",
-        "             .......;;;;;/mmmmmmmmmmmmmm\/..................  ",
-        "           ........;;;mmmmmmmmmmmmmmmmmmm.....................  ",
-        "         .........;;m/;;;;\mmmmmm/;;;;;\m......................  ",
-        "      ..........;;;m;;mmmm;;mmmm;;mmmmm;;m......................  ",
-        "    ..........;;;;;mmmnnnmmmmmmmmmmnnnmmmm\......................  ",
-        "    .........  ;;;;;n/#####\nmmmmn/#####\nmm\...................  ",
-        "    .......     ;;;;n##...##nmmmmn##...##nmmmm\.................  ",
-        "    ....        ;;;n#..o.|nmmmmn#..o..#nmmmmm,l.............  ",
-        "     ..          mmmn\.../nmmmmmmn\.../nmmmm,m,lll.......  ",
-        "              /mmmmmmmmmmmmmmmmmmmmmmmmmmm,mmmm,llll..  ",
-        "          /mmmmmmmmmmmmmmmmmmmmmmm\nmmmn/mmmmmmm,lll/  ",
-        "       /mmmmm/..........\mmmmmmmmmmnnmnnmmmmmmmmm,ll  ",
-        "      mmmmmm|..o....o..|mmmmmmmmmmmmmmmmmmmmmmmm,ll  ",
-        "      \mmmmmmm\......./mmmmmmmmmmmmmmmmmmmmmmmmm,llo  ",
-        "        \mmmmmmm\.../mmmmmmmmmmmmmmmmmmmmmmmmmm,lloo  ",
-        "          \mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm,ll/oooo  ",
-        "             \mmmmmmmmmmll..;;;.;;;;;;/mmm,lll/oooooo\  ",
-        "                       ll..;;;.;;;;;;/llllll/ooooooooo\  ",
-        "                       ll.;;;.;;;;;/.llll/oooooooooooo\  ",
-        "                       ll;;;.;;;;;;..ll/ooooooooooooooo\  ",
-        "                       \;;;;.;;;;;..ll/oooooooooooooooo\  ",
-        "                     ;;;;;;;;;;;;..ll|oooooooooooooooo  ",
-        "                    ;;;;;;.;;;;;;.ll/ooooooooooooooooooo\  ",
-        "                    ;;;;;.;;;;;;;ll/ooooooooooooo.....oooo  ",
-        "                     \;;;.;;;;;;/oooooooooooo.....oooooooo\  ",
-        "                      \;;;.;;;;/ooooooooo.....ooooooooooooo  ",
-        "                        \;;;;/ooooooo.....oooooooooooooooo\  ",
-        "                        |o\;/oooo.....ooooooooooooooooooooo\  ",
-        "                        oooooo....ooooooooooooooooooooooooo\  ",
-        "                       oooo....oooooooooooooooooooooooooooo\  ",
-        "                      ___.ooooooooooooooooooooooooooooooooooo\  ",
-        "                     /XXX\oooooooooooooooooooooooooooooooooooo\ ",
-        "                     |XXX|ooooo.ooooooooooooooooooooooooooooooo\  ",
-        "                   /oo\X/oooo..ooooooooooooooooooooooooooooooooo\  ",
-        "                 /ooooooo..ooooo..oooooooooooooooooooooooooooooo\ ",
-        "               /oooooooooooooooooooooooooooooooooooooooooooooooooo\ "
-    )
-    $colorIndex = 0
-    foreach ($line in $nalaArt) {
-        Write-Host $line -ForegroundColor $cocoColors[$colorIndex % $cocoColors.Count]
-        $colorIndex++
-        Start-Sleep -Milliseconds 25
-    }
-
-    # Texto de mascotas (sin traduccion - splash es visual)
-    Write-Host ""
-    Write-Host "                    NALA  /  Annie  /  Todas las mascotas  /  ..." -ForegroundColor DarkCyan
-    Write-Host ""
-
-    # Woof woof! Ladrido de Nala
-    $barkPath = "$PSScriptRoot\sounds\bark.wav"
-    if (Test-Path $barkPath) {
-        try {
-            $bark = New-Object System.Media.SoundPlayer $barkPath
-            $bark.PlaySync()
-            Start-Sleep -Milliseconds 100
-            $bark.PlaySync()
-        } catch {}
-    }
-    Write-Host ""
-    Write-Host "                              Cargando FREGONATOR..." -ForegroundColor Cyan
-    Write-Host ""
-    Start-Sleep -Milliseconds 1000
+    # v7: fuera el perro ASCII y el ladrido al arrancar (decision CEO 31/07/2026).
+    # La foto de Tequila y Nala aparece ahora al SALIR, no al entrar.
 }
 
 # Fondo oscuro - 100% standalone, sin dependencias
@@ -380,6 +320,24 @@ $script:IDIOMAS = @{
         avanzada = "ONE-CLICK AVANZADA"
         profunda = "PRE-CLONADISCOS"
         salir = "Salir"
+        despedidaTitulo = "GRACIAS POR USAR FREGONATOR"
+        despedidaSinAnuncios = "Fregonator no tiene anuncios, ni telemetria, ni version Pro."
+        despedidaLinea2 = "Lo unico que te pido es que le eches un ojo a lo que hacemos."
+        despedidaTienda = "Ver la tienda de Costa da Morte"
+        despedidaValorar = "Valorar Fregonator"
+        despedidaSalir = "Salir"
+        avisoTienda = "Mientras esperas: [T] la tienda de quien hizo esto"
+        despedidaGracias = "Abriendo la tienda... gracias!"
+        hastaPronto = "Hasta pronto!"
+        valorarTitulo = "VALORAR FREGONATOR"
+        valorarSubtitulo = "Tu valoracion se publica en fregonator.com. Nada mas se envia."
+        valorarEstrellas = "Cuantas estrellas le pones?"
+        valorarComentario = "Quieres decir algo? (ENTER para saltar)"
+        valorarOpcional = "Maximo 280 caracteres."
+        valorarNombre = "Tu nombre o nick (ENTER para anonimo):"
+        valorarEnviando = "Enviando..."
+        valorarOk = "Recibido. Gracias de verdad."
+        valorarError = "No se pudo enviar. Sera la conexion. Da igual, gracias igualmente."
         volver = "Volver"
         rendimiento = "Rendimiento"
         idioma = "Idioma"
@@ -561,6 +519,24 @@ $script:IDIOMAS = @{
         avanzada = "UN CLICK AVANZADA"
         profunda = "PRE-CLONADISCOS"
         salir = "Sair"
+        despedidaTitulo = "GRAZAS POR USAR FREGONATOR"
+        despedidaSinAnuncios = "Fregonator non ten anuncios, nin telemetria, nin version Pro."
+        despedidaLinea2 = "O unico que che pido e que lle botes un ollo ao que facemos."
+        despedidaTienda = "Ver a tenda de Costa da Morte"
+        despedidaValorar = "Valorar Fregonator"
+        despedidaSalir = "Sair"
+        avisoTienda = "Mentres agardas: [T] a tenda de quen fixo isto"
+        despedidaGracias = "Abrindo a tenda... grazas!"
+        hastaPronto = "Ata logo!"
+        valorarTitulo = "VALORAR FREGONATOR"
+        valorarSubtitulo = "A tua valoracion publicase en fregonator.com. Non se envia nada mais."
+        valorarEstrellas = "Cantas estrelas lle pos?"
+        valorarComentario = "Queres dicir algo? (ENTER para saltar)"
+        valorarOpcional = "Maximo 280 caracteres."
+        valorarNombre = "O teu nome ou nick (ENTER para anonimo):"
+        valorarEnviando = "Enviando..."
+        valorarOk = "Recibido. Grazas de verdade."
+        valorarError = "Non se puido enviar. Sera a conexion. Da igual, grazas igualmente."
         volver = "Volver"
         rendimiento = "Rendemento"
         idioma = "Idioma"
@@ -742,6 +718,24 @@ $script:IDIOMAS = @{
         avanzada = "ONE-CLICK ADVANCED"
         profunda = "PRE-CLONE DEEP"
         salir = "Exit"
+        despedidaTitulo = "THANKS FOR USING FREGONATOR"
+        despedidaSinAnuncios = "Fregonator has no ads, no telemetry, no Pro version."
+        despedidaLinea2 = "All I ask is that you take a look at what we make."
+        despedidaTienda = "Visit the Costa da Morte shop"
+        despedidaValorar = "Rate Fregonator"
+        despedidaSalir = "Exit"
+        avisoTienda = "While you wait: [T] the shop of whoever made this"
+        despedidaGracias = "Opening the shop... thanks!"
+        hastaPronto = "See you soon!"
+        valorarTitulo = "RATE FREGONATOR"
+        valorarSubtitulo = "Your review goes to fregonator.com. Nothing else is sent."
+        valorarEstrellas = "How many stars?"
+        valorarComentario = "Want to say something? (ENTER to skip)"
+        valorarOpcional = "280 characters max."
+        valorarNombre = "Your name or nick (ENTER for anonymous):"
+        valorarEnviando = "Sending..."
+        valorarOk = "Got it. Thank you, really."
+        valorarError = "Could not send it. Connection, probably. Never mind, thanks anyway."
         volver = "Back"
         rendimiento = "Performance"
         idioma = "Language"
@@ -1684,20 +1678,32 @@ function Show-Logo {
 
     Clear-Host
     Write-Host ""
-    Write-Host "    ███████╗██████╗ ███████╗ ██████╗  ██████╗ ███╗   ██╗ █████╗ ████████╗ ██████╗ ██████╗ " -ForegroundColor Cyan
-    Write-Host "    ██╔════╝██╔══██╗██╔════╝██╔════╝ ██╔═══██╗████╗  ██║██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗" -ForegroundColor Cyan
-    Write-Host "    █████╗  ██████╔╝█████╗  ██║  ███╗██║   ██║██╔██╗ ██║███████║   ██║   ██║   ██║██████╔╝" -ForegroundColor Cyan
-    Write-Host "    ██╔══╝  ██╔══██╗██╔══╝  ██║   ██║██║   ██║██║╚██╗██║██╔══██║   ██║   ██║   ██║██╔══██╗" -ForegroundColor Cyan
-    Write-Host "    ██║     ██║  ██║███████╗╚██████╔╝╚██████╔╝██║ ╚████║██║  ██║   ██║   ╚██████╔╝██║  ██║" -ForegroundColor Cyan
-    Write-Host "    ╚═╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝" -ForegroundColor Cyan
-    Write-Host "    $(T 'simpleFuncional')                                                              ARCAMIA-MEMMEM" -ForegroundColor DarkGray
-    Write-Host "    $(T 'clonaDisco')                                                www.clonadiscos.com" -ForegroundColor DarkGray
-    Write-Host "    $(T 'optimizaPC')                                                 www.fregonator.com" -ForegroundColor DarkGray
-    Write-Host "    " -NoNewline
+
+    # Eustaquio en el header, a la izquierda del titulo. Es la mascota de la
+    # casa: la misma calavera que lleva la marca, en bebe.
+
+    $logo = @(
+        "███████╗██████╗ ███████╗ ██████╗  ██████╗ ███╗   ██╗ █████╗ ████████╗ ██████╗ ██████╗ ",
+        "██╔════╝██╔══██╗██╔════╝██╔════╝ ██╔═══██╗████╗  ██║██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗",
+        "█████╗  ██████╔╝█████╗  ██║  ███╗██║   ██║██╔██╗ ██║███████║   ██║   ██║   ██║██████╔╝",
+        "██╔══╝  ██╔══██╗██╔══╝  ██║   ██║██║   ██║██║╚██╗██║██╔══██║   ██║   ██║   ██║██╔══██╗",
+        "██║     ██║  ██║███████╗╚██████╔╝╚██████╔╝██║ ╚████║██║  ██║   ██║   ╚██████╔╝██║  ██║",
+        "╚═╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝",
+        ""
+    )
+
+    foreach ($linea in $logo) {
+        if ($linea) { Write-Host "    $linea" -ForegroundColor Cyan }
+    }
+
+    Write-Host "               $(("$(T 'simpleFuncional')").PadRight(58))ARCAMIA-MEMMEM" -ForegroundColor DarkGray
+    Write-Host "               $(("$(T 'clonaDisco')").PadRight(58))www.clonadiscos.com" -ForegroundColor DarkGray
+    Write-Host "               $(("$(T 'optimizaPC')").PadRight(58))www.fregonator.com" -ForegroundColor DarkGray
+    Write-Host "               " -NoNewline
     Write-Host "COSTA DA MORTE" -NoNewline -ForegroundColor Cyan
     Write-Host " # " -NoNewline -ForegroundColor DarkGray
     Write-Host "DEATH COAST" -NoNewline -ForegroundColor Cyan
-    Write-Host "                                            www.costa-da-morte.com" -ForegroundColor Cyan
+    Write-Host "$(''.PadRight(30))www.costa-da-morte.com" -ForegroundColor Cyan
     Write-Host ""
 
     if ($Subtitulo) {
@@ -2851,12 +2857,6 @@ function Start-OneClick {
         @{ Nombre = (T "limpiandoDNS"); Detalle = "Ejecutando: ipconfig /flushdns"; Codigo = { ipconfig /flushdns 2>&1 | Out-Null; "OK" } }
         @{ Nombre = (T "optimizandoDiscos"); Detalle = "TRIM en unidades SSD"; Codigo = { Get-Volume | Where-Object { $_.DriveLetter -and $_.DriveType -eq 'Fixed' } | ForEach-Object { Optimize-Volume -DriveLetter $_.DriveLetter -ReTrim -EA 0 }; "OK" } }
         @{ Nombre = (T "configurandoEnergia"); Detalle = "Plan de energia Alto Rendimiento"; Codigo = { powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>&1 | Out-Null; "OK" } }
-        @{ Nombre = (T "actualizandoApps"); Detalle = "winget upgrade --all"; Codigo = {
-            if (Get-Command winget -EA 0) {
-                $p = Start-Process winget -ArgumentList "upgrade --all --accept-source-agreements --accept-package-agreements --silent" -NoNewWindow -PassThru
-                if (-not $p.WaitForExit(180000)) { $p.Kill() }  # Timeout 180s (3 min) para PCs lentos
-            }; "OK"
-        }}
         @{ Nombre = (T "verificandoUpdates"); Detalle = "UsoClient.exe StartScan"; Codigo = { Start-Process UsoClient.exe -ArgumentList "StartScan" -NoNewWindow -EA 0; "OK" } }
     )
 
@@ -3040,6 +3040,23 @@ function Start-OneClick {
         Set-CursorPositionSafe -X 0 -Y ($lineaBase + $total + 4)
         Write-Host "                                                                 $remainingStr ($(T 'tiempoRestante'))   " -ForegroundColor DarkGray
 
+        # Aviso discreto de la tienda. Parpadea despacio para que se note sin
+        # molestar, y no interrumpe la limpieza: solo escucha si pulsan T.
+        Set-CursorPositionSafe -X 0 -Y ($lineaBase + $total + 6)
+        $tick = [math]::Floor($elapsed.TotalMilliseconds / 900) % 2
+        if ($tick -eq 0) {
+            Write-Host "    $(T 'avisoTienda')                                  " -ForegroundColor DarkCyan
+        } else {
+            Write-Host "    $(T 'avisoTienda')                                  " -ForegroundColor DarkGray
+        }
+
+        if ([Console]::KeyAvailable) {
+            $k = [Console]::ReadKey($true)
+            if ($k.Key -eq "T") {
+                Start-Process "https://costa-da-morte.com/?utm_source=fregonator&utm_medium=app&utm_campaign=limpieza"
+            }
+        }
+
         Start-Sleep -Milliseconds 250
     }
 
@@ -3052,7 +3069,7 @@ function Start-OneClick {
         Write-Host ""
         Write-Host "    Opcion: " -NoNewline -ForegroundColor Yellow
         $opcion = Read-Host
-        if ($opcion.ToUpper() -eq "X") { [Environment]::Exit(0) }
+        if ($opcion.ToUpper() -eq "X") { Show-Despedida; [Environment]::Exit(0) }
         return
     }
 
@@ -3135,6 +3152,7 @@ function Start-OneClick {
             Start-Process explorer.exe -ArgumentList $script:CONFIG.LogPath
         }
         "X" {
+            Show-Despedida
             [Environment]::Exit(0)
         }
     }
@@ -3191,13 +3209,14 @@ function Start-OneClickAvanzada {
         @{ Nombre = (T "limpiandoDNS"); Detalle = "ipconfig /flushdns"; Codigo = { ipconfig /flushdns 2>&1 | Out-Null; "OK" } }
         @{ Nombre = (T "optimizandoDiscos"); Detalle = "TRIM SSD"; Codigo = { Get-Volume | Where-Object { $_.DriveLetter -and $_.DriveType -eq 'Fixed' } | ForEach-Object { Optimize-Volume -DriveLetter $_.DriveLetter -ReTrim -EA 0 }; "OK" } }
         @{ Nombre = (T "configurandoEnergia"); Detalle = "High Performance"; Codigo = { powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>&1 | Out-Null; "OK" } }
-        @{ Nombre = (T "actualizandoApps"); Detalle = "winget upgrade --all"; Codigo = {
+        @{ Nombre = (T "verificandoUpdates"); Detalle = "UsoClient.exe StartScan"; Codigo = { Start-Process UsoClient.exe -ArgumentList "StartScan" -NoNewWindow -EA 0; "OK" } }
+        # v7: solo en ULTRA se actualizan los programas (tarea mas lenta)
+        $(if ($script:ModoUltra) { @{ Nombre = (T "actualizandoApps"); Detalle = "winget upgrade --all"; Codigo = {
             if (Get-Command winget -EA 0) {
                 $p = Start-Process winget -ArgumentList "upgrade --all --accept-source-agreements --accept-package-agreements --silent" -NoNewWindow -PassThru
-                if (-not $p.WaitForExit(180000)) { $p.Kill() }  # Timeout 180s (3 min) para PCs lentos
+                if (-not $p.WaitForExit(180000)) { $p.Kill() }
             }; "OK"
-        }}
-        @{ Nombre = (T "verificandoUpdates"); Detalle = "UsoClient.exe StartScan"; Codigo = { Start-Process UsoClient.exe -ArgumentList "StartScan" -NoNewWindow -EA 0; "OK" } }
+        }} })
         # Avanzadas
         @{ Nombre = (T "limpiandoRegistro"); Detalle = "OpenSaveMRU, RunMRU"; Codigo = {
             @("HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSaveMRU",
@@ -3402,6 +3421,23 @@ function Start-OneClickAvanzada {
         Set-CursorPositionSafe -X 0 -Y ($lineaBase + $total + 4)
         Write-Host "                                                                 $remainingStr ($(T 'tiempoRestante'))   " -ForegroundColor DarkGray
 
+        # Aviso discreto de la tienda. Parpadea despacio para que se note sin
+        # molestar, y no interrumpe la limpieza: solo escucha si pulsan T.
+        Set-CursorPositionSafe -X 0 -Y ($lineaBase + $total + 6)
+        $tick = [math]::Floor($elapsed.TotalMilliseconds / 900) % 2
+        if ($tick -eq 0) {
+            Write-Host "    $(T 'avisoTienda')                                  " -ForegroundColor DarkCyan
+        } else {
+            Write-Host "    $(T 'avisoTienda')                                  " -ForegroundColor DarkGray
+        }
+
+        if ([Console]::KeyAvailable) {
+            $k = [Console]::ReadKey($true)
+            if ($k.Key -eq "T") {
+                Start-Process "https://costa-da-morte.com/?utm_source=fregonator&utm_medium=app&utm_campaign=limpieza"
+            }
+        }
+
         Start-Sleep -Milliseconds 250
     }
 
@@ -3414,7 +3450,7 @@ function Start-OneClickAvanzada {
         Write-Host ""
         Write-Host "    Opcion: " -NoNewline -ForegroundColor Yellow
         $opcion = Read-Host
-        if ($opcion.ToUpper() -eq "X") { [Environment]::Exit(0) }
+        if ($opcion.ToUpper() -eq "X") { Show-Despedida; [Environment]::Exit(0) }
         return
     }
 
@@ -3476,7 +3512,7 @@ function Start-OneClickAvanzada {
         Write-Host "    Opcion: " -NoNewline -ForegroundColor Yellow
         $opExtra = Read-Host
 
-        if ($opExtra.ToUpper() -eq "X") { [Environment]::Exit(0) }
+        if ($opExtra.ToUpper() -eq "X") { Show-Despedida; [Environment]::Exit(0) }
 
         switch ($opExtra.ToUpper()) {
             "D" {
@@ -3581,7 +3617,7 @@ function Start-OneClickAvanzada {
     switch ($opcion.ToUpper()) {
         "H" { if (Test-Path $htmlPath) { Start-Process $htmlPath } }
         "L" { Start-Process explorer.exe -ArgumentList $script:CONFIG.LogPath }
-        "X" { [Environment]::Exit(0) }
+        "X" { Show-Despedida; [Environment]::Exit(0) }
     }
 }
 
@@ -3757,6 +3793,155 @@ function Start-Avanzado {
             "V" { return }
         }
     }
+}
+
+# =============================================================================
+# DESPEDIDA - lo unico que se parece a un anuncio en toda la app, y es la
+# marca de casa. Sin banners, sin terceros, sin telemetria. El usuario elige.
+# =============================================================================
+function Show-Despedida {
+    Clear-Host
+    Write-Host ""
+    Write-Host "    ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "    ║                                                                   ║" -ForegroundColor Cyan
+    Write-Host "    ║                    $(T 'despedidaTitulo')                    ║" -ForegroundColor Cyan
+    Write-Host "    ║                                                                   ║" -ForegroundColor Cyan
+    Write-Host "    ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host ""
+
+    # Eustaquio bebe, la mascota
+    Write-Host "                              .-""""""-." -ForegroundColor DarkCyan
+    Write-Host "                             /  .--.   \" -ForegroundColor DarkCyan
+    Write-Host "                            |  /    \  |" -ForegroundColor DarkCyan
+    Write-Host "                            | | o  o | |" -ForegroundColor White
+    Write-Host "                            |  \ __ /  |" -ForegroundColor DarkCyan
+    Write-Host "                             \  '--'  /" -ForegroundColor DarkCyan
+    Write-Host "                              '-.__.-'" -ForegroundColor DarkCyan
+    Write-Host "                             /|      |\" -ForegroundColor DarkGray
+    Write-Host "                            / |______| \" -ForegroundColor DarkGray
+    Write-Host "                              |  ||  |" -ForegroundColor DarkGray
+    Write-Host "                             _|  ||  |_" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "                            E U S T A Q U I O" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "    ───────────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "    $(T 'despedidaSinAnuncios')" -ForegroundColor Gray
+    Write-Host "    $(T 'despedidaLinea2')" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "    ───────────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "        [T]  " -NoNewline -ForegroundColor Yellow
+    Write-Host "$(T 'despedidaTienda')" -ForegroundColor White
+    Write-Host "             costa-da-morte.com" -ForegroundColor DarkCyan
+    Write-Host ""
+    Write-Host "        [V]  " -NoNewline -ForegroundColor Yellow
+    Write-Host "$(T 'despedidaValorar')" -ForegroundColor White
+    Write-Host ""
+    Write-Host "        [X]  " -NoNewline -ForegroundColor DarkGray
+    Write-Host "$(T 'despedidaSalir')" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "    ───────────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "    $(T 'opcion'): " -NoNewline -ForegroundColor Yellow
+
+    $tecla = [Console]::ReadKey($true)
+    switch ($tecla.Key) {
+        "T" {
+            Start-Process "https://costa-da-morte.com/?utm_source=fregonator&utm_medium=app&utm_campaign=despedida"
+            Write-Host ""
+            Write-Host ""
+            Write-Host "    $(T 'despedidaGracias')" -ForegroundColor Cyan
+            Start-Sleep -Milliseconds 1200
+        }
+        "V" {
+            Show-Valorar
+            return
+        }
+        default {
+            Write-Host ""
+            Write-Host ""
+            Write-Host "    $(T 'hastaPronto')" -ForegroundColor Cyan
+            Start-Sleep -Milliseconds 500
+        }
+    }
+}
+
+# =============================================================================
+# VALORAR - manda la review a fregonator.com. Nada mas: ni datos, ni IP propia,
+# ni nombre si no lo escribe. Queda pendiente de aprobar antes de publicarse.
+# =============================================================================
+function Show-Valorar {
+    Clear-Host
+    Write-Host ""
+    Write-Host "    ╔═══════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "    ║                    $(T 'valorarTitulo')                     ║" -ForegroundColor Cyan
+    Write-Host "    ╚═══════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "    $(T 'valorarSubtitulo')" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "    $(T 'valorarEstrellas')" -ForegroundColor White
+    Write-Host ""
+    Write-Host "        [1] ★" -ForegroundColor DarkGray
+    Write-Host "        [2] ★★" -ForegroundColor DarkGray
+    Write-Host "        [3] ★★★" -ForegroundColor Yellow
+    Write-Host "        [4] ★★★★" -ForegroundColor Yellow
+    Write-Host "        [5] ★★★★★" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "        [X] $(T 'volver')" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "    $(T 'opcion'): " -NoNewline -ForegroundColor Yellow
+
+    $t = [Console]::ReadKey($true)
+    $estrellas = 0
+    switch ($t.KeyChar) {
+        "1" { $estrellas = 1 }
+        "2" { $estrellas = 2 }
+        "3" { $estrellas = 3 }
+        "4" { $estrellas = 4 }
+        "5" { $estrellas = 5 }
+        default { return }
+    }
+
+    Write-Host ""
+    Write-Host ""
+    Write-Host "    $(T 'valorarComentario')" -ForegroundColor White
+    Write-Host "    $(T 'valorarOpcional')" -ForegroundColor DarkGray
+    Write-Host "    > " -NoNewline -ForegroundColor Yellow
+    $texto = Read-Host
+
+    Write-Host ""
+    Write-Host "    $(T 'valorarNombre')" -ForegroundColor White
+    Write-Host "    > " -NoNewline -ForegroundColor Yellow
+    $nombre = Read-Host
+
+    Write-Host ""
+    Write-Host "    $(T 'valorarEnviando')" -ForegroundColor Gray
+
+    $cuerpo = @{
+        estrellas = $estrellas
+        texto     = $texto
+        nombre    = $nombre
+        version   = $script:CONFIG.Version
+        idioma    = $script:CONFIG.Idioma
+    } | ConvertTo-Json -Compress
+
+    try {
+        $r = Invoke-RestMethod -Uri "https://fregonator.com/api/reviews" `
+                               -Method Post `
+                               -ContentType "application/json" `
+                               -Body ([Text.Encoding]::UTF8.GetBytes($cuerpo)) `
+                               -TimeoutSec 10 `
+                               -ErrorAction Stop
+        Write-Host ""
+        Write-Host "    $(T 'valorarOk')" -ForegroundColor Green
+    } catch {
+        Write-Host ""
+        Write-Host "    $(T 'valorarError')" -ForegroundColor Yellow
+    }
+
+    Start-Sleep 2
+    Show-Despedida
 }
 
 # =============================================================================
@@ -4129,16 +4314,12 @@ while ($true) {
             $needRedraw = $true
         }
         "X" {
-            Write-Host ""
-            Write-Host "    Hasta pronto!" -ForegroundColor Cyan
-            Start-Sleep -Milliseconds 500
+            Show-Despedida
             [Environment]::Exit(0)
         }
         "Escape" {
             # ESC = Salir (igual que X)
-            Write-Host ""
-            Write-Host "    Hasta pronto!" -ForegroundColor Cyan
-            Start-Sleep -Milliseconds 500
+            Show-Despedida
             [Environment]::Exit(0)
         }
     }

@@ -28,7 +28,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
-$LogoPath = Join-Path $ScriptPath "Logo-Fregonator-001.png"
+$LogoPath = Join-Path $ScriptPath "Logo-Fregonator-v7.png"
 $FontPath = Join-Path $ScriptPath "_FUENTES\citaro_voor_dubbele_hoogte_breed\citaro_voor_dubbele_hoogte_breed.ttf"
 $AbortFile = "$env:PUBLIC\fregonator_abort.flag"
 $LauncherScript = Join-Path $ScriptPath "Fregonator-Launcher.ps1"
@@ -125,23 +125,26 @@ if (Test-Path $FontPath) {
 # =============================================================================
 # PALETA DE COLORES - Tron Legacy (v6.0.1)
 # =============================================================================
-$script:ColFondo       = [System.Drawing.Color]::FromArgb(6, 8, 14)
-$script:ColPanel       = [System.Drawing.Color]::FromArgb(12, 16, 26)
-$script:ColCyan        = [System.Drawing.Color]::FromArgb(0, 232, 255)
-$script:ColCyanBright  = [System.Drawing.Color]::FromArgb(102, 240, 255)
-$script:ColCyanDark    = [System.Drawing.Color]::FromArgb(0, 160, 180)
-$script:ColCyanDim     = [System.Drawing.Color]::FromArgb(0, 80, 100)
-$script:ColGris        = [System.Drawing.Color]::FromArgb(55, 62, 75)
-$script:ColGrisOsc     = [System.Drawing.Color]::FromArgb(18, 22, 32)
-$script:ColVerde       = [System.Drawing.Color]::FromArgb(0, 230, 120)
-$script:ColAmarillo    = [System.Drawing.Color]::FromArgb(255, 220, 0)
-$script:ColRojo        = [System.Drawing.Color]::FromArgb(255, 70, 70)
-$script:ColNaranja     = [System.Drawing.Color]::FromArgb(255, 150, 50)
-$script:ColBorder      = [System.Drawing.Color]::FromArgb(0, 120, 140)
-$script:ColBorderHover = [System.Drawing.Color]::FromArgb(0, 232, 255)
-$script:ColPanelHover  = [System.Drawing.Color]::FromArgb(16, 22, 36)
-$script:ColGridLine    = [System.Drawing.Color]::FromArgb(15, 20, 32)
-$script:ColGold        = [System.Drawing.Color]::FromArgb(200, 170, 50)
+$script:ColFondo       = [System.Drawing.Color]::FromArgb(255, 255, 255)
+$script:ColBoton       = [System.Drawing.Color]::FromArgb(255, 255, 255)
+$script:ColCyan        = [System.Drawing.Color]::FromArgb(17, 17, 17)
+$script:ColCyanBright  = [System.Drawing.Color]::FromArgb(0, 0, 0)
+$script:ColCyanDark    = [System.Drawing.Color]::FromArgb(60, 60, 60)
+$script:ColCyanDim     = [System.Drawing.Color]::FromArgb(110, 110, 110)
+$script:ColGris        = [System.Drawing.Color]::FromArgb(110, 110, 110)
+$script:ColGrisOsc     = [System.Drawing.Color]::FromArgb(232, 232, 232)
+$script:ColNegro       = [System.Drawing.Color]::FromArgb(17, 17, 17)
+$script:ColPanel       = [System.Drawing.Color]::FromArgb(250, 250, 250)
+$script:ColRojo        = [System.Drawing.Color]::FromArgb(200, 50, 50)
+$script:ColVerde       = [System.Drawing.Color]::FromArgb(30, 150, 80)
+$script:ColAmarillo    = [System.Drawing.Color]::FromArgb(150, 110, 30)
+$script:ColGold        = [System.Drawing.Color]::FromArgb(150, 110, 30)
+$script:ColGlow        = [System.Drawing.Color]::FromArgb(0, 255, 255, 255)
+$script:ColBorder      = [System.Drawing.Color]::FromArgb(225, 225, 225)
+$script:ColBorderHover = [System.Drawing.Color]::FromArgb(17, 17, 17)
+$script:ColPanelHover  = [System.Drawing.Color]::FromArgb(245, 245, 245)
+$script:ColGridLine    = [System.Drawing.Color]::FromArgb(238, 238, 238)
+# (v7) $script:ColGold        = [System.Drawing.Color]::FromArgb(200, 170, 50)
 
 # Estado global
 $script:TiempoInicio = [DateTime]::Now
@@ -170,13 +173,19 @@ function New-RoundedRectPath {
 # VENTANA PRINCIPAL - Compacta, posicionada a la derecha del Terminal
 # =============================================================================
 $formWidth = 480
-$formHeight = 680
+$formHeight = 724
 
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "FREGONATOR MONITOR"
 $form.Size = New-Object System.Drawing.Size($formWidth, $formHeight)
 $form.FormBorderStyle = "None"
 $form.BackColor = $script:ColFondo
+
+# v7: mismo icono que el launcher (Eustaquio)
+try {
+    $icoM = Join-Path $PSScriptRoot "fregonator.ico"
+    if (Test-Path $icoM) { $form.Icon = New-Object System.Drawing.Icon($icoM) }
+} catch { }
 $form.TopMost = $true
 $form.ShowInTaskbar = $false  # No aparece en barra de tareas
 
@@ -297,9 +306,24 @@ $form.Controls.Add($lblEtapa)
 # =============================================================================
 # BARRA DE PROGRESO PRINCIPAL (Owner-drawn GDI+)
 # =============================================================================
+
+# ============================================================================
+# v7: Eustaquio corriendo mientras avanza la limpieza
+# ============================================================================
+$script:RunFrames = @()
+$script:RunIdx = 0
+try {
+    $carpetaRun = Join-Path $PSScriptRoot "_correr"
+    if (Test-Path $carpetaRun) {
+        Get-ChildItem (Join-Path $carpetaRun "run*.png") | Sort-Object Name | ForEach-Object {
+            $script:RunFrames += [System.Drawing.Image]::FromFile($_.FullName)
+        }
+    }
+} catch { }
+
 $pnlProgressBar = New-Object System.Windows.Forms.Panel
-$pnlProgressBar.Location = New-Object System.Drawing.Point(20, 135)
-$pnlProgressBar.Size = New-Object System.Drawing.Size(($formWidth - 40), 32)
+$pnlProgressBar.Location = New-Object System.Drawing.Point(20, 141)
+$pnlProgressBar.Size = New-Object System.Drawing.Size(($formWidth - 40), 76)
 $pnlProgressBar.BackColor = $script:ColFondo
 $pnlProgressBar.Tag = @{Progress = 0; Completed = $false}
 
@@ -312,56 +336,29 @@ $pnlProgressBar.Add_Paint({
     $prog = $sender.Tag.Progress
     $done = $sender.Tag.Completed
 
-    # Track background (rounded rect)
-    $trackRect = New-Object System.Drawing.Rectangle(0, 0, ($w - 1), ($h - 1))
-    $trackPath = New-RoundedRectPath -Rect $trackRect -Radius 4
-    $trackBrush = New-Object System.Drawing.SolidBrush($script:ColGrisOsc)
-    $g.FillPath($trackBrush, $trackPath)
+    # v7: una linea fina y limpia. Sin gradientes, sin scanlines, sin marcas.
+    # La informacion es el ancho, nada mas.
+    $alto = 3
+    $y = $h - 12
+
+    # carril
+    $g.FillRectangle((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(28, 32, 46))), 0, $y, $w, $alto)
 
     if ($prog -gt 0) {
-        $fillWidth = [int](($prog / 100.0) * $w)
-        if ($fillWidth -lt 8) { $fillWidth = 8 }
-        $fillRect = New-Object System.Drawing.Rectangle(0, 0, $fillWidth, ($h - 1))
-        $fillPath = New-RoundedRectPath -Rect $fillRect -Radius 4
-
-        # Gradient fill
-        $gradRect = New-Object System.Drawing.Rectangle(0, 0, ($fillWidth + 1), $h)
-        if ($done) {
-            $gradBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
-                $gradRect,
-                [System.Drawing.Color]::FromArgb(0, 160, 80),
-                $script:ColVerde,
-                [System.Drawing.Drawing2D.LinearGradientMode]::Horizontal
-            )
-        } else {
-            $gradBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
-                $gradRect,
-                $script:ColCyanDark,
-                $script:ColCyan,
-                [System.Drawing.Drawing2D.LinearGradientMode]::Horizontal
-            )
-        }
-        $g.FillPath($gradBrush, $fillPath)
-
-        # Scanlines (retro texture)
-        $scanPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(30, 0, 0, 0), 1)
-        for ($sy = 0; $sy -lt $h; $sy += 4) {
-            $g.DrawLine($scanPen, 0, $sy, $fillWidth, $sy)
-        }
-
-        # Leading edge (bright vertical line)
-        if (-not $done -and $fillWidth -gt 4) {
-            $edgeColor = if ($done) { $script:ColVerde } else { $script:ColCyanBright }
-            $edgePen = New-Object System.Drawing.Pen($edgeColor, 2)
-            $g.DrawLine($edgePen, ($fillWidth - 1), 2, ($fillWidth - 1), ($h - 3))
-        }
+        $ancho = [int](($prog / 100.0) * $w)
+        if ($ancho -lt 2) { $ancho = 2 }
+        $col = if ($done) { $script:ColVerde } else { $script:ColCyan }
+        $g.FillRectangle((New-Object System.Drawing.SolidBrush($col)), 0, $y, $ancho, $alto)
     }
 
-    # Tick marks at 25/50/75%
-    $tickPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(40, 255, 255, 255), 1)
-    foreach ($pct in @(25, 50, 75)) {
-        $tx = [int]($w * $pct / 100.0)
-        $g.DrawLine($tickPen, $tx, ($h - 5), $tx, ($h - 1))
+    # Eustaquio corre por encima de la barra, en la punta del progreso
+    if ($script:RunFrames.Count -gt 0) {
+        $f = $script:RunFrames[$script:RunIdx % $script:RunFrames.Count]
+        $altoF = 54
+        $anchoF = [int]($f.Width * $altoF / $f.Height)
+        $xF = [int](($prog / 100.0) * ($w - $anchoF))
+        if ($xF -lt 0) { $xF = 0 }
+        $g.DrawImage($f, $xF, ($y - $altoF - 1), $anchoF, $altoF)
     }
 })
 $form.Controls.Add($pnlProgressBar)
@@ -371,10 +368,10 @@ $form.Controls.Add($pnlProgressBar)
 # =============================================================================
 $lblPorcentaje = New-Object System.Windows.Forms.Label
 $lblPorcentaje.Text = "0%"
-$lblPorcentaje.Font = New-Object System.Drawing.Font("Consolas", 42, [System.Drawing.FontStyle]::Bold)
+$lblPorcentaje.Font = New-Object System.Drawing.Font("Segoe UI", 42, [System.Drawing.FontStyle]::Bold)
 $lblPorcentaje.ForeColor = $script:ColCyan
 $lblPorcentaje.BackColor = $script:ColFondo
-$lblPorcentaje.Location = New-Object System.Drawing.Point(20, 175)
+$lblPorcentaje.Location = New-Object System.Drawing.Point(20, 219)
 $lblPorcentaje.Size = New-Object System.Drawing.Size(200, 60)
 $lblPorcentaje.TextAlign = "MiddleLeft"
 $form.Controls.Add($lblPorcentaje)
@@ -384,7 +381,7 @@ $lblTiempo.Text = "00:00"
 $lblTiempo.Font = New-Object System.Drawing.Font($script:citaroFamily, 24)
 $lblTiempo.ForeColor = $script:ColCyanDark
 $lblTiempo.BackColor = $script:ColFondo
-$lblTiempo.Location = New-Object System.Drawing.Point(320, 185)
+$lblTiempo.Location = New-Object System.Drawing.Point(320, 229)
 $lblTiempo.Size = New-Object System.Drawing.Size(140, 40)
 $lblTiempo.TextAlign = "MiddleRight"
 $form.Controls.Add($lblTiempo)
@@ -393,7 +390,7 @@ $form.Controls.Add($lblTiempo)
 # PANEL ESTADISTICAS - 3 Cards separadas
 # =============================================================================
 $cardWidth = [int]((($formWidth - 40) - 20) / 3)  # 3 cards con 10px gap x2
-$cardY = 245
+$cardY = 289
 $cardH = 80
 
 # Card 1: Tareas
@@ -489,16 +486,16 @@ $lblTareaLabel = New-Object System.Windows.Forms.Label
 $lblTareaLabel.Text = (Get-Text "procesando")
 $lblTareaLabel.Font = New-Object System.Drawing.Font("Segoe UI Semibold", 9)
 $lblTareaLabel.ForeColor = $script:ColCyanDim
-$lblTareaLabel.Location = New-Object System.Drawing.Point(20, 338)
+$lblTareaLabel.Location = New-Object System.Drawing.Point(20, 382)
 $lblTareaLabel.AutoSize = $true
 $form.Controls.Add($lblTareaLabel)
 
 $lblTareaActual = New-Object System.Windows.Forms.Label
 $lblTareaActual.Text = (Get-Text "esperando")
-$lblTareaActual.Font = New-Object System.Drawing.Font("Consolas", 10, [System.Drawing.FontStyle]::Bold)
+$lblTareaActual.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
 $lblTareaActual.ForeColor = $script:ColCyan
 $lblTareaActual.BackColor = $script:ColPanel
-$lblTareaActual.Location = New-Object System.Drawing.Point(20, 358)
+$lblTareaActual.Location = New-Object System.Drawing.Point(20, 402)
 $lblTareaActual.Size = New-Object System.Drawing.Size(($formWidth - 40), 28)
 $lblTareaActual.Padding = New-Object System.Windows.Forms.Padding(8, 5, 8, 5)
 $form.Controls.Add($lblTareaActual)
@@ -510,13 +507,13 @@ $lblLogLabel = New-Object System.Windows.Forms.Label
 $lblLogLabel.Text = (Get-Text "actividad")
 $lblLogLabel.Font = New-Object System.Drawing.Font("Segoe UI Semibold", 9)
 $lblLogLabel.ForeColor = $script:ColCyanDim
-$lblLogLabel.Location = New-Object System.Drawing.Point(20, 396)
+$lblLogLabel.Location = New-Object System.Drawing.Point(20, 440)
 $lblLogLabel.AutoSize = $true
 $form.Controls.Add($lblLogLabel)
 
 # Top border for log area
 $sepLog = New-Object System.Windows.Forms.Panel
-$sepLog.Location = New-Object System.Drawing.Point(20, 414)
+$sepLog.Location = New-Object System.Drawing.Point(20, 458)
 $sepLog.Size = New-Object System.Drawing.Size(($formWidth - 40), 1)
 $sepLog.BackColor = $script:ColGridLine
 $form.Controls.Add($sepLog)
@@ -524,7 +521,7 @@ $form.Controls.Add($sepLog)
 # Try Cascadia Mono, fallback Consolas
 $logFontFamily = "Consolas"
 try {
-    $testFont = New-Object System.Drawing.Font("Cascadia Mono", 9.5)
+    $testFont = New-Object System.Drawing.Font("Segoe UI", 9.5)
     if ($testFont.Name -eq "Cascadia Mono") { $logFontFamily = "Cascadia Mono" }
     $testFont.Dispose()
 } catch {}
@@ -537,7 +534,7 @@ $txtLog.Font = New-Object System.Drawing.Font($logFontFamily, 9.5)
 $txtLog.ForeColor = $script:ColCyanDark
 $txtLog.BackColor = $script:ColGrisOsc
 $txtLog.BorderStyle = "None"
-$txtLog.Location = New-Object System.Drawing.Point(20, 416)
+$txtLog.Location = New-Object System.Drawing.Point(20, 460)
 $txtLog.Size = New-Object System.Drawing.Size(($formWidth - 40), 107)
 $form.Controls.Add($txtLog)
 
@@ -554,7 +551,7 @@ $btnAbortar.FlatAppearance.BorderColor = [System.Drawing.Color]::FromArgb(120, 4
 $btnAbortar.FlatAppearance.BorderSize = 1
 $btnAbortar.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(35, 14, 16)
 $btnAbortar.FlatAppearance.MouseDownBackColor = [System.Drawing.Color]::FromArgb(50, 18, 20)
-$btnAbortar.Location = New-Object System.Drawing.Point(20, 535)
+$btnAbortar.Location = New-Object System.Drawing.Point(20, 579)
 $btnAbortar.Size = New-Object System.Drawing.Size(($formWidth - 40), 50)
 $btnAbortar.Cursor = "Hand"
 $btnAbortar.Add_MouseEnter({
@@ -581,7 +578,7 @@ $form.Controls.Add($btnAbortar)
 # PANEL BOTONES FINALES (oculto inicialmente)
 # =============================================================================
 $pnlFinal = New-Object System.Windows.Forms.Panel
-$pnlFinal.Location = New-Object System.Drawing.Point(20, 535)
+$pnlFinal.Location = New-Object System.Drawing.Point(20, 579)
 $pnlFinal.Size = New-Object System.Drawing.Size(($formWidth - 40), 120)
 $pnlFinal.BackColor = $script:ColFondo
 $pnlFinal.Visible = $false
@@ -662,6 +659,8 @@ $timer.Interval = 100
 $spinnerChars = @([char]0x25DC, [char]0x25DD, [char]0x25DE, [char]0x25DF)  # Circulos rotando
 
 $timer.Add_Tick({
+    # v7: siguiente fotograma de la carrera
+    $script:RunIdx++
     $elapsed = [DateTime]::Now - $script:TiempoInicio
     $lblTiempo.Text = "{0:mm\:ss}" -f $elapsed
 
@@ -679,7 +678,7 @@ $timer.Add_Tick({
                 if ($data) {
                     # Etapa con spinner
                     if ($data.Etapa -and -not $script:Terminado) {
-                        $lblEtapa.Text = "$spinner " + $data.Etapa.ToUpper()
+                        $lblEtapa.Text = $data.Etapa.ToUpper()
                     }
 
                     # Progreso
